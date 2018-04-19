@@ -1,0 +1,43 @@
+.alert-box {
+	color: #555;
+	border-radius: 3px;
+	padding: 1px 5px 1px 36px;
+	margin: 0 0 3px;
+	overflow: hidden;
+	line-height: 22px;
+}
+
+.alert-box span {
+	/*font-weight:bold;*/
+	/*text-transform:uppercase;*/
+	display: block;
+}
+
+.alert-box code {
+	display: block;
+	border: none;
+}
+
+.error {
+	background: #ffecec url('/assets/alert/error.png') no-repeat 10px 50%;
+	border: 1px solid #f5aca6;
+}
+
+.success {
+	background: #e9ffd9 url('/assets/alert/success.png') no-repeat 10px 50%;
+	border: 1px solid #a6ca8a;
+}
+
+.warning {
+	background: #fff8c4 url('/assets/alert/warning.png') no-repeat 10px 50%;
+	border: 1px solid #f2c779;
+}
+
+.notice {
+	background: #e3f7fc url('/assets/alert/notice.png') no-repeat 10px 50%;
+	border: 1px solid #8ed9f6;
+}
+
+.strike {
+	text-decoration: line-through;
+}

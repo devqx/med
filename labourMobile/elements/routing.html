@@ -1,0 +1,127 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<script src="../../bower_components/page/page.js"></script>
+<script>
+  window.addEventListener('WebComponentsReady', function() {
+
+    // We use Page.js for routing. This is a Micro
+    // client-side router inspired by the Express router
+    // More info: https://visionmedia.github.io/page.js/
+
+    // Removes end / from app.baseUrl which page.base requires for production
+    //if (window.location.port === '81') {  // if production
+      page.base(app.baseUrl.replace(/\/$/, ''));
+    //}
+
+    // Middleware
+    function scrollToTop(ctx, next) {
+      app.scrollPageToTop();
+      next();
+    }
+
+    function closeDrawer(ctx, next) {
+      app.closeDrawer();
+      next();
+    }
+
+    // Routes
+    page('*', scrollToTop, closeDrawer, function(ctx, next) {
+      next();
+    });
+
+    page('/', function() {
+      app.route = 'patients';
+      app.detailView = false;
+      __getPatientDatum();
+    });
+
+    page(app.baseUrl, function() {
+      app.route = 'patients';
+	    app.detailView = false;
+      __getPatientDatum();
+    });
+
+    page('/enroll-patient', function() {
+      app.route = 'enroll-patient';
+	    app.detailView = false;
+    });
+
+    page('/patients', function() {
+      __getPatientDatum();
+      app.route = 'patients';
+	    app.detailView = false;
+    });
+
+    page('/patient-profile/:labourID', function(data) {
+      app.route = 'patient-profile';
+	    app.params = data.params;
+	    __getPatientData(data.params.labourID);
+	    __getPatientMeasurements(data.params.labourID);
+	    __getPatientVitals(data.params.labourID);
+	    __getPatientAssessments(data.params.labourID);
+	    __getPatientDeliveries(data.params.labourID);
+	    setTimeout(function(){window.dispatchEvent(new Event('resize'));},1000);
+    });
+
+    page('/record-measurements/:labourID', function(data) {
+	    app.detailView = true;
+      app.route = 'record-measurements';
+      app.params = data.params;
+      var angScope = angular.element(document.getElementById('record-measurements-pg')).scope();
+      angScope.resetMe();
+    });
+
+    page('/record-vitals/:labourID', function(data) {
+	    app.detailView = true;
+      app.route = 'record-vitals';
+      app.params = data.params;
+      var angScope = angular.element(document.getElementById('record-vitals-pg')).scope();
+      angScope.resetMe();
+    });
+
+    page('/risk-assessment/:labourID', function(data) {
+	    app.detailView = true;
+      app.route = 'risk-assessment';
+      app.params = data.params;
+      __getPatientData(data.params.labourID);
+      var angAssScope = angular.element(document.getElementById('risk-assessment-pg')).scope();
+      angAssScope._getAssessment(app.params.labourID);
+      angAssScope.resetAssMe();
+    });
+
+    page('/record-delivery/:labourID', function(data) {
+	    app.detailView = true;
+      app.route = 'record-delivery';
+      app.params = data.params;
+      var angScopes = angular.element(document.getElementById('record-delivery-pg')).scope();
+      angScopes.resetDelivery();
+    });
+
+    page('/search', function () {
+	    app.detailView = false;
+      app.route = 'search-labour';
+    });
+
+    // 404
+    page('*', function() {
+      app.$.toast.text = 'Can\'t find: ' + window.location.href  + '. Redirected you to Home Page';
+      app.$.toast.show();
+	    app.detailView = false;
+      page.redirect(app.baseUrl);
+    });
+
+    // add #! before urls
+    page({
+      hashbang: true
+    });
+
+  });
+</script>

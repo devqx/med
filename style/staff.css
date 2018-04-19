@@ -1,0 +1,2 @@
+.action_buttons a:not(:first-of-type) {border-right: #d1d1d1 1px solid; padding-right: 10px}
+.action_buttons {margin-bottom: 50px}

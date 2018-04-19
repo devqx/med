@@ -1,0 +1,143 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: robot
+ * Date: 11/17/14
+ * Time: 3:19 PM
+ */
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/PatientDentistryDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/StaffDirectoryDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/ClinicDAO.php';
+//$protect = new Protect();
+$request = (new PatientDentistryDAO())->get($_GET['id']);
+$clinic = (new ClinicDAO())->getClinic(1);
+?>
+<!DOCTYPE html>
+<html moznomarginboxes mozdisallowselectionprint>
+<head>
+    <meta charset="UTF-8">
+
+    <script src="/js/jquery-2.1.1.min.js"></script>
+    <script src="/js/jquery-migrate-1.2.1.min.js"></script>
+    <script src="/assets/jquery-print/jQuery.print.js" type="text/javascript"></script>
+    <link href="/style/def.css" rel="stylesheet" type="text/css"/>
+    <link href="/style/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="/style/font-awesome.css" rel="stylesheet" type="text/css"/>
+    <meta name="viewport" content="width=device-width">
+    <style>
+        .table-condensed > thead > tr > th, .table-condensed > tbody > tr > th, .table-condensed > tfoot > tr > th, .table-condensed > thead > tr > td, .table-condensed > tbody > tr > td, .table-condensed > tfoot > tr > td {
+            padding: 2px !important;
+        }
+
+        .table {
+            color: #000;
+        }
+
+        table, tr, td, th, tbody, thead, tfoot {
+            page-break-inside: avoid !important;
+        }
+    </style>
+</head>
+<body>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] .'/classes/Clinic.php';$c=new Clinic();?>
+<?= ( $c::$useHeader) ? $clinic->getHeader() : '' ?>
+<div class="container">
+    <div style="text-align: center; font-size: 28px; margin-top: <?= ( $c::$useHeader) ? 0 : 2 ?>30px">Dentistry Report</div>
+    <br/>
+    <table class="box table table-condensed table-borderless">
+        <tbody>
+        <tr>
+            <td>Patient's Name:</td>
+            <td><?= $request->getPatient()->getFullname() ?></td>
+            <td>Sex/Age:</td>
+            <td><?= ucfirst($request->getPatient()->getSex()) ?>/<?= $request->getPatient()->getAge() ?></td>
+        </tr>
+        <tr>
+            <td>Patient EMR:</td>
+            <td><?= $request->getPatient()->getId() ?></td>
+            <td>Nationality:</td>
+            <td><?= ucfirst($request->getPatient()->getNationality()->country_name) ?></td>
+        </tr>
+        <tr>
+            <td>Patient Phone:</td>
+            <td><?= $request->getPatient()->getPhoneNumber() ?></td>
+            <td>Request Date:</td>
+            <td><?= date("dS M, Y h:i A", strtotime($request->getRequestDate())) ?></td>
+        </tr>
+        <tr>
+            <td>Coverage:</td>
+            <td><?= $request->getPatient()->getScheme()->getType() == 'self' ? "Self Pay" : "Insured" ?></td>
+            <td>Approved By:</td>
+            <td><?= ($request->getApproved())? $request->getApprovedBy()->getFullname() : 'Pending' ?></td>
+        </tr>
+        <tr>
+            <td>Request ID:</td>
+            <td><?= $request->getRequestCode() ?></td>
+            <td>Approved Date:</td>
+            <td><?= date("dS M, Y h:i A", strtotime($request->getApprovedDate())) ?></td>
+        </tr>
+        <tr>
+            <td>Referred By:</td>
+            <td colspan="3"><?= (($request->getReferral()!=null)? $request->getReferral()->getName()." [".$request->getReferral()->getCompany()->getName()."]" : '-') ?></td>
+        </tr>
+        <tr>
+            <td>Examinations Requested:</td>
+            <td colspan="3"><?php
+                $reqs = [];
+                foreach ($request->getServices() as $s) {
+                    $reqs[] = $s->getName();
+                }
+                echo '<strong>' . implode(", ", $reqs) . '</strong>';
+                ?></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <?php foreach ($request->getNotes() as $note) { ?>
+        <div class="box">
+            <div class="row-fluid">
+                <div class="span12"><?= $note->getNote() ?>
+                    <p class="clear"></p></div>
+            </div>
+        </div>
+    <?php } ?>
+    <?php if($request->getApproved()){ ?>
+    <table class="table table-borderless" style="margin-top:100px;width:100%">
+        <tr>
+            <td style="border-top: none">
+                <span class="pull-right">REPORTED BY: <?=$request->getApprovedBy()->getFullname() ?></span>
+            </td>
+        </tr>
+    </table>
+    <?php } ?>
+    <div class="pull-right no-print" style="">
+        <a href="/pdf.php?page=<?= urlencode($_SERVER['REQUEST_URI']) ?>&title=<?= urlencode($request->getRequestCode())?>" class="action"><i class="icon-book"></i> PDF</a>
+    </div>
+
+</div>
+
+<script>
+    function Print() {
+        $('.container').print({
+            addGlobalStyles: true,
+            stylesheet: null,
+            rejectWindow: true,
+            noPrintSelector: ".no-print",
+            iframe: true,
+            append: "Generated by MedicPlus"
+        });
+    }
+    $(document).ready(function () {
+    });
+    $(document).on('keydown', function(e) {
+        if(e.ctrlKey && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
+            alert("Please use the Print PDF button below for a better rendering on the document");
+            e.cancelBubble = true;
+            e.preventDefault();
+
+            e.stopImmediatePropagation();
+        }
+    });
+</script>
+</body>
+</html>

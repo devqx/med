@@ -1,0 +1,85 @@
+.blockElem {
+	display: block;
+	/*border-bottom:1px solid #ddd;*/
+	/*box-shadow:inset 0 2px 4px #ddd;*/
+	/*clear: both;*/
+	/*width: 97%;*/
+	/*margin: 4px auto;*/
+	padding: 5px;
+}
+
+.blockElem table {
+}
+
+.blockElem table.data tr {
+	border-bottom: 1px solid #f4f4f4;
+}
+
+.blockElem table tr td {
+	/*padding:5px;*/
+}
+
+.blockElem table tr td:last-child {
+	/*width:20%;*/
+	/*color: #09C;*/
+	/*text-align:right;*/
+}
+
+.blockElem .iTabs {
+	padding: 0;
+}
+.blockElem .iTabs a {
+	display: inline-block;
+	padding: 0 5px;
+	border: 1px solid transparent;
+}
+
+.blockElem p[align="center"] {
+	background-color: #F4F4F4;
+	padding: 3px;
+}
+
+.blockElem .iTabs a:hover {
+	border: 1px solid #cfcfcf;
+	background-color: #f4f4f4;
+	text-decoration: none
+}
+
+.blockElem .iTabs a.actif {
+	border: 1px solid #ccc;
+	color: #11354F
+}
+
+.blockElem .iTabs a.active {
+	border: 1px solid #ccc;
+	color: #11354F
+}
+
+span.loader {
+	padding-right: 2px
+}
+
+img.logo {
+	height: 70px !important;
+}
+
+@media print {
+	* {
+		font-size: 11px !important;
+		font-family: Helvetica !important;
+		text-shadow: none !important;
+		color: #000 !important;
+	}
+}
+
+select#pay_method {
+	/*margin-top: 5px;*/
+}
+
+#discount_val {
+	/*margin-top: 20px;*/
+}
+
+#printBox {
+	margin-left: -10px
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/reportsphp/vendor/jdorn/sql-formatter" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/lespoilus/spyc" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/jdorn/file-system-cache" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/twig/twig" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/adodb/adodb-php" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/google/apiclient" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/phpoffice/phpexcel" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/mikecao/flight" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/composer" />
+      <path value="$PROJECT_DIR$/reportsphp/vendor/swiftmailer/swiftmailer" />
+    </include_path>
+  </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="5.3.0" />
+</project>

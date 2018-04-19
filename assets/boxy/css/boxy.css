@@ -1,0 +1,223 @@
+/* Cascading Style Sheet */
+.boxy-wrapper {
+	position: absolute;
+	color: #333;
+	empty-cells: show;
+	/*font-size: 90%;*/
+}
+
+.boxy-wrapper.fixed {
+	position: fixed;
+}
+
+/* Modal */
+.boxy-modal-blackout {
+	position: absolute;
+	background-color: rgba(0, 0, 0, 1);
+	left: 0;
+	top: 0;
+	opacity: 0.3;
+}
+
+/* Border */
+.boxy-wrapper .top-left, .boxy-wrapper .top-right, .boxy-wrapper .bottom-right, .boxy-wrapper .bottom-left {
+	width: 10px;
+	height: 10px;
+	padding: 0;
+	background-repeat: no-repeat;
+	border: none;
+}
+
+.boxy-wrapper .top-left {
+	/*filter: alpha(opacity=10);
+	opacity: 0.6;*/
+	/*background-image: url('/img/boxy/boxy-nw.png');
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/boxy-nw.png');*/
+	/*background-image: url('/img/boxy/tl.png');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/tl.png');*/
+}
+
+.boxy-wrapper .top-right {
+	/*filter: alpha(opacity=10);
+	opacity: 0.6;*/
+	/*background-image: url('/img/boxy/boxy-ne.png');
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/boxy-ne.png');*/
+	/*background-image: url('/img/boxy/tr.png');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/tr.png');
+	background-position: left bottom;*/
+}
+
+.boxy-wrapper .bottom-right {
+	/*filter: alpha(opacity=10);
+	opacity: 0.6;*/
+	/*background-image: url('/img/boxy/boxy-se.png');
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/boxy-se.png');*/
+	/*background-image: url('/img/boxy/br.png');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/br.png');*/
+}
+
+.boxy-wrapper .bottom-left {
+	/*filter: alpha(opacity=10);
+	opacity: 0.6;
+	background-image: url('/img/boxy/bl.png');
+	#background: none;*/
+	/*filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/boxy-sw.png');
+	background-image: url('/img/boxy/boxy-ne.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/bl.png');*/
+}
+
+/* IE6+7 hacks for the border. IE7 should support this natively but fails in conjunction with modal blackout bg. */
+/* NB: these must be absolute paths or URLs to your img/boxy */
+.boxy-wrapper .top {
+	/*filter: alpha(opacity=10);
+	opacity: 0.6;
+	background-image: url('/img/boxy/b.png');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/b.png');*/
+}
+
+.boxy-wrapper .rightt {
+	/*filter: alpha(opacity=10);
+	opacity: 0.6;
+	background-image: url('/img/boxy/b.png');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/b.png');*/
+}
+
+.boxy-wrapper .bottom {
+	/*filter: alpha(opacity=10);
+	opacity: 0.6;
+	background-image: url('/img/boxy/b.png');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/b.png');*/
+}
+
+.boxy-wrapper .leftt {
+	/*filter: alpha(opacity=10);
+	opacity: 0.6;
+	background-image: url('/img/boxy/b.png');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/boxy/b.png');*/
+}
+
+/* Title bar */
+.boxy-wrapper .title-bar {
+	color: #999;
+	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.65);
+	/*background-color: #dfdfdf;*/
+	/*background-image: -moz-linear-gradient(top, #eeeeee, #c8c8c8);*/
+	/*background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#eeeeee), to(#c8c8c8));*/
+	/*background-image: -webkit-linear-gradient(top, #eeeeee, #c8c8c8);*/
+	/*background-image: -o-linear-gradient(top, #eeeeee, #c8c8c8);*/
+	/*background-image: linear-gradient(to bottom, #eeeeee, #c8c8c8);*/
+	/*background-repeat: repeat-x;*/
+	/*box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 1px 2px rgba(0, 0, 0, .05);*/
+	/*border: 1px solid #bbbbbb;*/
+	/**border: 0;*/
+	/*border-bottom-color: #a2a2a2;*/
+	padding: 10px;
+	position: relative;
+	cursor: move;
+	/*background-color: #f1f3f7;*/
+	/*border-bottom: 1px solid #ebedf3;*/
+}
+
+.boxy-wrapper .title-bar .dragging {
+	cursor: move;
+}
+
+.boxy-wrapper .title-bar h2 {
+	font-size: 13px;
+	/*color: #000;*/
+	line-height: 1;
+	margin: 0;
+	padding: 0;
+	font-weight: bold !important;
+	height: 10px;
+}
+
+.boxy-wrapper .title-bar .close {
+	color: #000;
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	font-size: 90%;
+	line-height: 1;
+	/*font-weight: bold;*/
+}
+
+/* Content Region */
+.boxy-inner {
+	padding: 5px;
+	/*border:2px solid #888;*/
+	/*border: 1px solid #DAD8D8;*/
+	border-radius: 4px !important;
+	overflow: hidden;
+	box-shadow: 0 0 50px #444;
+	-o-box-shadow: 0 0 50px #444;
+	-webkit-box-shadow: 0 0 50px #444;
+	-moz-box-shadow: 0 0 50px #444;
+	background: #fff;
+	height: 95vh;
+}
+
+.boxy-inner .msg_body {
+	margin-left: 50px;
+}
+
+/*@media (max-width: 1080px) {*/
+.boxy-content {
+	padding: 10px;
+	max-height: 75vh;
+	max-height: calc(95vh - 60px);
+	/*padding-bottom: 100px;*/
+	overflow-y: auto;
+	min-width: 350px;
+	/*border: 1px solid #bbbbbb;
+	border-bottom-color: #a2a2a2;*/
+}
+
+/*.boxy-content .btn-block {*/
+/*position: absolute;*/
+/*bottom: 0;*/
+/*}*/
+/*}*/
+@media (max-width: 979px) {
+	.boxy-content {
+		min-width: 750px;
+	}
+}
+
+@media (max-width: 760px) {
+	.boxy-content {
+		min-width: 520px;
+	}
+}
+
+@media (max-width: 460px) {
+	.boxy-content {
+		min-width: 320px;
+	}
+}
+
+.boxy-content.table {
+	display: table !important;
+	padding: 10px;
+}
+
+/* Question Boxes */
+.boxy-wrapper .question {
+	width: 400px;
+	min-height: 80px;
+	/*text-align: center;*/
+	margin-top:20px;
+	margin-left:30px;
+}
+
+.boxy-wrapper .answers {
+	text-align: right;
+}
+
+.boxy-wrapper .answers .btn {
+	min-width:100px;
+}
+
+.boxy-content .popover {
+	opacity: 1;
+}

@@ -1,0 +1,737 @@
+﻿package com.adobe.images {
+
+    public class BitString {
+
+        public var len:int = 0;
+        public var val:int = 0;
+
+    }
+}//package com.adobe.images 
+﻿package com.adobe.images {
+    import flash.display.*;
+    import flash.utils.*;
+    import flash.geom.*;
+
+    public class JPGEncoder {
+
+        private var ZigZag:Array;
+        private var YTable:Array;
+        private var UVTable:Array;
+        private var fdtbl_Y:Array;
+        private var fdtbl_UV:Array;
+        private var YDC_HT:Array;
+        private var UVDC_HT:Array;
+        private var YAC_HT:Array;
+        private var UVAC_HT:Array;
+        private var std_dc_luminance_nrcodes:Array;
+        private var std_dc_luminance_values:Array;
+        private var std_ac_luminance_nrcodes:Array;
+        private var std_ac_luminance_values:Array;
+        private var std_dc_chrominance_nrcodes:Array;
+        private var std_dc_chrominance_values:Array;
+        private var std_ac_chrominance_nrcodes:Array;
+        private var std_ac_chrominance_values:Array;
+        private var bitcode:Array;
+        private var category:Array;
+        private var byteout:ByteArray;
+        private var bytenew:int = 0;
+        private var bytepos:int = 7;
+        private var DU:Array;
+        private var YDU:Array;
+        private var UDU:Array;
+        private var VDU:Array;
+
+        public function JPGEncoder(_arg1:Number=50){
+            ZigZag = [0, 1, 5, 6, 14, 15, 27, 28, 2, 4, 7, 13, 16, 26, 29, 42, 3, 8, 12, 17, 25, 30, 41, 43, 9, 11, 18, 24, 31, 40, 44, 53, 10, 19, 23, 32, 39, 45, 52, 54, 20, 22, 33, 38, 46, 51, 55, 60, 21, 34, 37, 47, 50, 56, 59, 61, 35, 36, 48, 49, 57, 58, 62, 63];
+            YTable = new Array(64);
+            UVTable = new Array(64);
+            fdtbl_Y = new Array(64);
+            fdtbl_UV = new Array(64);
+            std_dc_luminance_nrcodes = [0, 0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0];
+            std_dc_luminance_values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+            std_ac_luminance_nrcodes = [0, 0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 125];
+            std_ac_luminance_values = [1, 2, 3, 0, 4, 17, 5, 18, 33, 49, 65, 6, 19, 81, 97, 7, 34, 113, 20, 50, 129, 145, 161, 8, 35, 66, 177, 193, 21, 82, 209, 240, 36, 51, 98, 114, 130, 9, 10, 22, 23, 24, 25, 26, 37, 38, 39, 40, 41, 42, 52, 53, 54, 55, 56, 57, 58, 67, 68, 69, 70, 71, 72, 73, 74, 83, 84, 85, 86, 87, 88, 89, 90, 99, 100, 101, 102, 103, 104, 105, 106, 115, 116, 117, 118, 119, 120, 121, 122, 131, 132, 133, 134, 135, 136, 137, 138, 146, 147, 148, 149, 150, 151, 152, 153, 154, 162, 163, 164, 165, 166, 167, 168, 169, 170, 178, 179, 180, 181, 182, 183, 184, 185, 186, 194, 195, 196, 197, 198, 199, 200, 201, 202, 210, 211, 212, 213, 214, 215, 216, 217, 218, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250];
+            std_dc_chrominance_nrcodes = [0, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0];
+            std_dc_chrominance_values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+            std_ac_chrominance_nrcodes = [0, 0, 2, 1, 2, 4, 4, 3, 4, 7, 5, 4, 4, 0, 1, 2, 119];
+            std_ac_chrominance_values = [0, 1, 2, 3, 17, 4, 5, 33, 49, 6, 18, 65, 81, 7, 97, 113, 19, 34, 50, 129, 8, 20, 66, 145, 161, 177, 193, 9, 35, 51, 82, 240, 21, 98, 114, 209, 10, 22, 36, 52, 225, 37, 241, 23, 24, 25, 26, 38, 39, 40, 41, 42, 53, 54, 55, 56, 57, 58, 67, 68, 69, 70, 71, 72, 73, 74, 83, 84, 85, 86, 87, 88, 89, 90, 99, 100, 101, 102, 103, 104, 105, 106, 115, 116, 117, 118, 119, 120, 121, 122, 130, 131, 132, 133, 134, 135, 136, 137, 138, 146, 147, 148, 149, 150, 151, 152, 153, 154, 162, 163, 164, 165, 166, 167, 168, 169, 170, 178, 179, 180, 181, 182, 183, 184, 185, 186, 194, 195, 196, 197, 198, 199, 200, 201, 202, 210, 211, 212, 213, 214, 215, 216, 217, 218, 226, 227, 228, 229, 230, 231, 232, 233, 234, 242, 243, 244, 245, 246, 247, 248, 249, 250];
+            bitcode = new Array(0xFFFF);
+            category = new Array(0xFFFF);
+            DU = new Array(64);
+            YDU = new Array(64);
+            UDU = new Array(64);
+            VDU = new Array(64);
+            super();
+            if (_arg1 <= 0){
+                _arg1 = 1;
+            };
+            if (_arg1 > 100){
+                _arg1 = 100;
+            };
+            var _local2:int;
+            if (_arg1 < 50){
+                _local2 = int((5000 / _arg1));
+            } else {
+                _local2 = int((200 - (_arg1 * 2)));
+            };
+            initHuffmanTbl();
+            initCategoryNumber();
+            initQuantTables(_local2);
+        }
+        private function initQuantTables(_arg1:int):void{
+            var _local2:int;
+            var _local3:Number;
+            var _local8:int;
+            var _local4:Array = [16, 11, 10, 16, 24, 40, 51, 61, 12, 12, 14, 19, 26, 58, 60, 55, 14, 13, 16, 24, 40, 57, 69, 56, 14, 17, 22, 29, 51, 87, 80, 62, 18, 22, 37, 56, 68, 109, 103, 77, 24, 35, 55, 64, 81, 104, 113, 92, 49, 64, 78, 87, 103, 121, 120, 101, 72, 92, 95, 98, 112, 100, 103, 99];
+            _local2 = 0;
+            while (_local2 < 64) {
+                _local3 = Math.floor((((_local4[_local2] * _arg1) + 50) / 100));
+                if (_local3 < 1){
+                    _local3 = 1;
+                } else {
+                    if (_local3 > 0xFF){
+                        _local3 = 0xFF;
+                    };
+                };
+                YTable[ZigZag[_local2]] = _local3;
+                _local2++;
+            };
+            var _local5:Array = [17, 18, 24, 47, 99, 99, 99, 99, 18, 21, 26, 66, 99, 99, 99, 99, 24, 26, 56, 99, 99, 99, 99, 99, 47, 66, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99];
+            _local2 = 0;
+            while (_local2 < 64) {
+                _local3 = Math.floor((((_local5[_local2] * _arg1) + 50) / 100));
+                if (_local3 < 1){
+                    _local3 = 1;
+                } else {
+                    if (_local3 > 0xFF){
+                        _local3 = 0xFF;
+                    };
+                };
+                UVTable[ZigZag[_local2]] = _local3;
+                _local2++;
+            };
+            var _local6:Array = [1, 1.387039845, 1.306562965, 1.175875602, 1, 0.785694958, 0.5411961, 0.275899379];
+            _local2 = 0;
+            var _local7:int;
+            while (_local7 < 8) {
+                _local8 = 0;
+                while (_local8 < 8) {
+                    fdtbl_Y[_local2] = (1 / (((YTable[ZigZag[_local2]] * _local6[_local7]) * _local6[_local8]) * 8));
+                    fdtbl_UV[_local2] = (1 / (((UVTable[ZigZag[_local2]] * _local6[_local7]) * _local6[_local8]) * 8));
+                    _local2++;
+                    _local8++;
+                };
+                _local7++;
+            };
+        }
+        private function computeHuffmanTbl(_arg1:Array, _arg2:Array):Array{
+            var _local7:int;
+            var _local3:int;
+            var _local4:int;
+            var _local5:Array = new Array();
+            var _local6 = 1;
+            while (_local6 <= 16) {
+                _local7 = 1;
+                while (_local7 <= _arg1[_local6]) {
+                    _local5[_arg2[_local4]] = new BitString();
+                    _local5[_arg2[_local4]].val = _local3;
+                    _local5[_arg2[_local4]].len = _local6;
+                    _local4++;
+                    _local3++;
+                    _local7++;
+                };
+                _local3 = (_local3 * 2);
+                _local6++;
+            };
+            return (_local5);
+        }
+        private function initHuffmanTbl():void{
+            YDC_HT = computeHuffmanTbl(std_dc_luminance_nrcodes, std_dc_luminance_values);
+            UVDC_HT = computeHuffmanTbl(std_dc_chrominance_nrcodes, std_dc_chrominance_values);
+            YAC_HT = computeHuffmanTbl(std_ac_luminance_nrcodes, std_ac_luminance_values);
+            UVAC_HT = computeHuffmanTbl(std_ac_chrominance_nrcodes, std_ac_chrominance_values);
+        }
+        private function initCategoryNumber():void{
+            var _local3:int;
+            var _local1 = 1;
+            var _local2 = 2;
+            var _local4 = 1;
+            while (_local4 <= 15) {
+                _local3 = _local1;
+                while (_local3 < _local2) {
+                    category[(32767 + _local3)] = _local4;
+                    bitcode[(32767 + _local3)] = new BitString();
+                    bitcode[(32767 + _local3)].len = _local4;
+                    bitcode[(32767 + _local3)].val = _local3;
+                    _local3++;
+                };
+                _local3 = -((_local2 - 1));
+                while (_local3 <= -(_local1)) {
+                    category[(32767 + _local3)] = _local4;
+                    bitcode[(32767 + _local3)] = new BitString();
+                    bitcode[(32767 + _local3)].len = _local4;
+                    bitcode[(32767 + _local3)].val = ((_local2 - 1) + _local3);
+                    _local3++;
+                };
+                _local1 = (_local1 << 1);
+                _local2 = (_local2 << 1);
+                _local4++;
+            };
+        }
+        private function writeBits(_arg1:BitString):void{
+            var _local2:int = _arg1.val;
+            var _local3:int = (_arg1.len - 1);
+            while (_local3 >= 0) {
+                if ((_local2 & uint((1 << _local3)))){
+                    bytenew = (bytenew | uint((1 << bytepos)));
+                };
+                _local3--;
+                bytepos--;
+                if (bytepos < 0){
+                    if (bytenew == 0xFF){
+                        writeByte(0xFF);
+                        writeByte(0);
+                    } else {
+                        writeByte(bytenew);
+                    };
+                    bytepos = 7;
+                    bytenew = 0;
+                };
+            };
+        }
+        private function writeByte(_arg1:int):void{
+            byteout.writeByte(_arg1);
+        }
+        private function writeWord(_arg1:int):void{
+            writeByte(((_arg1 >> 8) & 0xFF));
+            writeByte((_arg1 & 0xFF));
+        }
+        private function fDCTQuant(_arg1:Array, _arg2:Array):Array{
+            var _local3:Number;
+            var _local4:Number;
+            var _local5:Number;
+            var _local6:Number;
+            var _local7:Number;
+            var _local8:Number;
+            var _local9:Number;
+            var _local10:Number;
+            var _local11:Number;
+            var _local12:Number;
+            var _local13:Number;
+            var _local14:Number;
+            var _local15:Number;
+            var _local16:Number;
+            var _local17:Number;
+            var _local18:Number;
+            var _local19:Number;
+            var _local20:Number;
+            var _local21:Number;
+            var _local22:int;
+            var _local23:int;
+            _local22 = 0;
+            while (_local22 < 8) {
+                _local3 = (_arg1[(_local23 + 0)] + _arg1[(_local23 + 7)]);
+                _local10 = (_arg1[(_local23 + 0)] - _arg1[(_local23 + 7)]);
+                _local4 = (_arg1[(_local23 + 1)] + _arg1[(_local23 + 6)]);
+                _local9 = (_arg1[(_local23 + 1)] - _arg1[(_local23 + 6)]);
+                _local5 = (_arg1[(_local23 + 2)] + _arg1[(_local23 + 5)]);
+                _local8 = (_arg1[(_local23 + 2)] - _arg1[(_local23 + 5)]);
+                _local6 = (_arg1[(_local23 + 3)] + _arg1[(_local23 + 4)]);
+                _local7 = (_arg1[(_local23 + 3)] - _arg1[(_local23 + 4)]);
+                _local11 = (_local3 + _local6);
+                _local14 = (_local3 - _local6);
+                _local12 = (_local4 + _local5);
+                _local13 = (_local4 - _local5);
+                _arg1[(_local23 + 0)] = (_local11 + _local12);
+                _arg1[(_local23 + 4)] = (_local11 - _local12);
+                _local15 = ((_local13 + _local14) * 0.707106781);
+                _arg1[(_local23 + 2)] = (_local14 + _local15);
+                _arg1[(_local23 + 6)] = (_local14 - _local15);
+                _local11 = (_local7 + _local8);
+                _local12 = (_local8 + _local9);
+                _local13 = (_local9 + _local10);
+                _local19 = ((_local11 - _local13) * 0.382683433);
+                _local16 = ((0.5411961 * _local11) + _local19);
+                _local18 = ((1.306562965 * _local13) + _local19);
+                _local17 = (_local12 * 0.707106781);
+                _local20 = (_local10 + _local17);
+                _local21 = (_local10 - _local17);
+                _arg1[(_local23 + 5)] = (_local21 + _local16);
+                _arg1[(_local23 + 3)] = (_local21 - _local16);
+                _arg1[(_local23 + 1)] = (_local20 + _local18);
+                _arg1[(_local23 + 7)] = (_local20 - _local18);
+                _local23 = (_local23 + 8);
+                _local22++;
+            };
+            _local23 = 0;
+            _local22 = 0;
+            while (_local22 < 8) {
+                _local3 = (_arg1[(_local23 + 0)] + _arg1[(_local23 + 56)]);
+                _local10 = (_arg1[(_local23 + 0)] - _arg1[(_local23 + 56)]);
+                _local4 = (_arg1[(_local23 + 8)] + _arg1[(_local23 + 48)]);
+                _local9 = (_arg1[(_local23 + 8)] - _arg1[(_local23 + 48)]);
+                _local5 = (_arg1[(_local23 + 16)] + _arg1[(_local23 + 40)]);
+                _local8 = (_arg1[(_local23 + 16)] - _arg1[(_local23 + 40)]);
+                _local6 = (_arg1[(_local23 + 24)] + _arg1[(_local23 + 32)]);
+                _local7 = (_arg1[(_local23 + 24)] - _arg1[(_local23 + 32)]);
+                _local11 = (_local3 + _local6);
+                _local14 = (_local3 - _local6);
+                _local12 = (_local4 + _local5);
+                _local13 = (_local4 - _local5);
+                _arg1[(_local23 + 0)] = (_local11 + _local12);
+                _arg1[(_local23 + 32)] = (_local11 - _local12);
+                _local15 = ((_local13 + _local14) * 0.707106781);
+                _arg1[(_local23 + 16)] = (_local14 + _local15);
+                _arg1[(_local23 + 48)] = (_local14 - _local15);
+                _local11 = (_local7 + _local8);
+                _local12 = (_local8 + _local9);
+                _local13 = (_local9 + _local10);
+                _local19 = ((_local11 - _local13) * 0.382683433);
+                _local16 = ((0.5411961 * _local11) + _local19);
+                _local18 = ((1.306562965 * _local13) + _local19);
+                _local17 = (_local12 * 0.707106781);
+                _local20 = (_local10 + _local17);
+                _local21 = (_local10 - _local17);
+                _arg1[(_local23 + 40)] = (_local21 + _local16);
+                _arg1[(_local23 + 24)] = (_local21 - _local16);
+                _arg1[(_local23 + 8)] = (_local20 + _local18);
+                _arg1[(_local23 + 56)] = (_local20 - _local18);
+                _local23++;
+                _local22++;
+            };
+            _local22 = 0;
+            while (_local22 < 64) {
+                _arg1[_local22] = Math.round((_arg1[_local22] * _arg2[_local22]));
+                _local22++;
+            };
+            return (_arg1);
+        }
+        private function writeAPP0():void{
+            writeWord(65504);
+            writeWord(16);
+            writeByte(74);
+            writeByte(70);
+            writeByte(73);
+            writeByte(70);
+            writeByte(0);
+            writeByte(1);
+            writeByte(1);
+            writeByte(0);
+            writeWord(1);
+            writeWord(1);
+            writeByte(0);
+            writeByte(0);
+        }
+        private function writeSOF0(_arg1:int, _arg2:int):void{
+            writeWord(65472);
+            writeWord(17);
+            writeByte(8);
+            writeWord(_arg2);
+            writeWord(_arg1);
+            writeByte(3);
+            writeByte(1);
+            writeByte(17);
+            writeByte(0);
+            writeByte(2);
+            writeByte(17);
+            writeByte(1);
+            writeByte(3);
+            writeByte(17);
+            writeByte(1);
+        }
+        private function writeDQT():void{
+            var _local1:int;
+            writeWord(65499);
+            writeWord(132);
+            writeByte(0);
+            _local1 = 0;
+            while (_local1 < 64) {
+                writeByte(YTable[_local1]);
+                _local1++;
+            };
+            writeByte(1);
+            _local1 = 0;
+            while (_local1 < 64) {
+                writeByte(UVTable[_local1]);
+                _local1++;
+            };
+        }
+        private function writeDHT():void{
+            var _local1:int;
+            writeWord(65476);
+            writeWord(418);
+            writeByte(0);
+            _local1 = 0;
+            while (_local1 < 16) {
+                writeByte(std_dc_luminance_nrcodes[(_local1 + 1)]);
+                _local1++;
+            };
+            _local1 = 0;
+            while (_local1 <= 11) {
+                writeByte(std_dc_luminance_values[_local1]);
+                _local1++;
+            };
+            writeByte(16);
+            _local1 = 0;
+            while (_local1 < 16) {
+                writeByte(std_ac_luminance_nrcodes[(_local1 + 1)]);
+                _local1++;
+            };
+            _local1 = 0;
+            while (_local1 <= 161) {
+                writeByte(std_ac_luminance_values[_local1]);
+                _local1++;
+            };
+            writeByte(1);
+            _local1 = 0;
+            while (_local1 < 16) {
+                writeByte(std_dc_chrominance_nrcodes[(_local1 + 1)]);
+                _local1++;
+            };
+            _local1 = 0;
+            while (_local1 <= 11) {
+                writeByte(std_dc_chrominance_values[_local1]);
+                _local1++;
+            };
+            writeByte(17);
+            _local1 = 0;
+            while (_local1 < 16) {
+                writeByte(std_ac_chrominance_nrcodes[(_local1 + 1)]);
+                _local1++;
+            };
+            _local1 = 0;
+            while (_local1 <= 161) {
+                writeByte(std_ac_chrominance_values[_local1]);
+                _local1++;
+            };
+        }
+        private function writeSOS():void{
+            writeWord(65498);
+            writeWord(12);
+            writeByte(3);
+            writeByte(1);
+            writeByte(0);
+            writeByte(2);
+            writeByte(17);
+            writeByte(3);
+            writeByte(17);
+            writeByte(0);
+            writeByte(63);
+            writeByte(0);
+        }
+        private function processDU(_arg1:Array, _arg2:Array, _arg3:Number, _arg4:Array, _arg5:Array):Number{
+            var _local8:int;
+            var _local12:int;
+            var _local13:int;
+            var _local14:int;
+            var _local6:BitString = _arg5[0];
+            var _local7:BitString = _arg5[240];
+            var _local9:Array = fDCTQuant(_arg1, _arg2);
+            _local8 = 0;
+            while (_local8 < 64) {
+                DU[ZigZag[_local8]] = _local9[_local8];
+                _local8++;
+            };
+            var _local10:int = (DU[0] - _arg3);
+            _arg3 = DU[0];
+            if (_local10 == 0){
+                writeBits(_arg4[0]);
+            } else {
+                writeBits(_arg4[category[(32767 + _local10)]]);
+                writeBits(bitcode[(32767 + _local10)]);
+            };
+            var _local11 = 63;
+            while ((((_local11 > 0)) && ((DU[_local11] == 0)))) {
+                _local11--;
+            };
+            if (_local11 == 0){
+                writeBits(_local6);
+                return (_arg3);
+            };
+            _local8 = 1;
+            while (_local8 <= _local11) {
+                _local12 = _local8;
+                while ((((DU[_local8] == 0)) && ((_local8 <= _local11)))) {
+                    _local8++;
+                };
+                _local13 = (_local8 - _local12);
+                if (_local13 >= 16){
+                    _local14 = 1;
+                    while (_local14 <= (_local13 / 16)) {
+                        writeBits(_local7);
+                        _local14++;
+                    };
+                    _local13 = int((_local13 & 15));
+                };
+                writeBits(_arg5[((_local13 * 16) + category[(32767 + DU[_local8])])]);
+                writeBits(bitcode[(32767 + DU[_local8])]);
+                _local8++;
+            };
+            if (_local11 != 63){
+                writeBits(_local6);
+            };
+            return (_arg3);
+        }
+        private function RGB2YUV(_arg1:BitmapData, _arg2:int, _arg3:int):void{
+            var _local6:int;
+            var _local7:uint;
+            var _local8:Number;
+            var _local9:Number;
+            var _local10:Number;
+            var _local4:int;
+            var _local5:int;
+            while (_local5 < 8) {
+                _local6 = 0;
+                while (_local6 < 8) {
+                    _local7 = _arg1.getPixel32((_arg2 + _local6), (_arg3 + _local5));
+                    _local8 = Number(((_local7 >> 16) & 0xFF));
+                    _local9 = Number(((_local7 >> 8) & 0xFF));
+                    _local10 = Number((_local7 & 0xFF));
+                    YDU[_local4] = ((((0.299 * _local8) + (0.587 * _local9)) + (0.114 * _local10)) - 128);
+                    UDU[_local4] = (((-0.16874 * _local8) + (-0.33126 * _local9)) + (0.5 * _local10));
+                    VDU[_local4] = (((0.5 * _local8) + (-0.41869 * _local9)) + (-0.08131 * _local10));
+                    _local4++;
+                    _local6++;
+                };
+                _local5++;
+            };
+        }
+        public function encode(_arg1:BitmapData):ByteArray{
+            var _local6:int;
+            var _local7:BitString;
+            byteout = new ByteArray();
+            bytenew = 0;
+            bytepos = 7;
+            writeWord(65496);
+            writeAPP0();
+            writeDQT();
+            writeSOF0(_arg1.width, _arg1.height);
+            writeDHT();
+            writeSOS();
+            var _local2:Number = 0;
+            var _local3:Number = 0;
+            var _local4:Number = 0;
+            bytenew = 0;
+            bytepos = 7;
+            var _local5:int;
+            while (_local5 < _arg1.height) {
+                _local6 = 0;
+                while (_local6 < _arg1.width) {
+                    RGB2YUV(_arg1, _local6, _local5);
+                    _local2 = processDU(YDU, fdtbl_Y, _local2, YDC_HT, YAC_HT);
+                    _local3 = processDU(UDU, fdtbl_UV, _local3, UVDC_HT, UVAC_HT);
+                    _local4 = processDU(VDU, fdtbl_UV, _local4, UVDC_HT, UVAC_HT);
+                    _local6 = (_local6 + 8);
+                };
+                _local5 = (_local5 + 8);
+            };
+            if (bytepos >= 0){
+                _local7 = new BitString();
+                _local7.len = (bytepos + 1);
+                _local7.val = ((1 << (bytepos + 1)) - 1);
+                writeBits(_local7);
+            };
+            writeWord(65497);
+            return (byteout);
+        }
+
+    }
+}//package com.adobe.images 
+﻿package {
+    import com.adobe.images.*;
+    import flash.display.*;
+    import flash.utils.*;
+    import flash.events.*;
+    import flash.media.*;
+    import flash.geom.*;
+    import flash.system.*;
+    import flash.net.*;
+    import flash.external.*;
+
+    public class Webcam extends Sprite {
+
+        private var video:Video;
+        private var encoder:JPGEncoder;
+        private var snd:Sound;
+        private var channel:SoundChannel;
+        private var jpeg_quality:int;
+        private var video_width:int;
+        private var video_height:int;
+        private var server_width:int;
+        private var server_height:int;
+        private var camera:Camera;
+        private var bmp:Bitmap;
+        private var bmpdata:BitmapData;
+        private var url:String;
+        private var stealth:int;
+
+        public function Webcam(){
+            channel = new SoundChannel();
+            super();
+            Security.allowDomain("*");
+            var _local1:Object = LoaderInfo(this.root.loaderInfo).parameters;
+            video_width = Math.floor(_local1.width);
+            video_height = Math.floor(_local1.height);
+            server_width = Math.floor(_local1.server_width);
+            server_height = Math.floor(_local1.server_height);
+            stage.scaleMode = StageScaleMode.NO_SCALE;
+            stage.align = StageAlign.TOP_LEFT;
+            stage.stageWidth = Math.max(video_width, server_width);
+            stage.stageHeight = Math.max(video_height, server_height);
+            var _local2 = -1;
+            var _local3:* = 0;
+            var _local4:* = Camera.names.length;
+            while (_local3 < _local4) {
+                if (Camera.names[_local3] == "USB Video Class Video"){
+                    _local2 = _local3;
+                    _local3 = _local4;
+                };
+                _local3++;
+            };
+            if (_local2 > -1){
+                camera = Camera.getCamera(String(_local2));
+            } else {
+                camera = Camera.getCamera();
+            };
+            if (camera != null){
+                camera.addEventListener(ActivityEvent.ACTIVITY, activityHandler);
+                video = new Video(Math.max(video_width, server_width), Math.max(video_height, server_height));
+                video.attachCamera(camera);
+                addChild(video);
+                if ((((video_width < server_width)) && ((video_height < server_height)))){
+                    video.scaleX = (video_width / server_width);
+                    video.scaleY = (video_height / server_height);
+                };
+                camera.setQuality(0, 100);
+                camera.setKeyFrameInterval(10);
+                camera.setMode(Math.max(video_width, server_width), Math.max(video_height, server_height), 30);
+                camera.setMotionLevel(100);
+                ExternalInterface.addCallback("_snap", snap);
+                ExternalInterface.addCallback("_configure", configure);
+                ExternalInterface.addCallback("_upload", upload);
+                ExternalInterface.addCallback("_reset", reset);
+                ExternalInterface.addCallback("_get_raw_data", get_raw_data);
+                ExternalInterface.addCallback("_get_data", test_return);
+                if (_local1.shutter_enabled == 1){
+                    snd = new Sound();
+                    snd.load(new URLRequest(_local1.shutter_url));
+                };
+                jpeg_quality = 90;
+                ExternalInterface.call("webcam.flash_notify", "flashLoadComplete", true);
+            } else {
+                trace("You need a camera.");
+                ExternalInterface.call("webcam.flash_notify", "error", "No camera was detected.");
+            };
+        }
+        public function set_quality(_arg1:int){
+            if (_arg1 < 0){
+                _arg1 = 0;
+            };
+            if (_arg1 > 100){
+                _arg1 = 100;
+            };
+            jpeg_quality = _arg1;
+        }
+        public function configure(_arg1:String="camera"){
+            Security.showSettings(_arg1);
+        }
+        private function activityHandler(_arg1:ActivityEvent):void{
+            trace(("activityHandler: " + _arg1));
+        }
+        public function snap(_arg1, _arg2, _arg3, _arg4=0){
+            if (_arg2){
+                set_quality(_arg2);
+            };
+            stealth = _arg4;
+            trace("in snap(), drawing to bitmap");
+            if (_arg3){
+                channel = snd.play();
+                setTimeout(snap2, 10, _arg1);
+            } else {
+                snap2(_arg1);
+            };
+        }
+        public function snap2(_arg1){
+            bmpdata = new BitmapData(Math.max(video_width, server_width), Math.max(video_height, server_height));
+            bmpdata.draw(video);
+            if (!stealth){
+                bmp = new Bitmap(bmpdata);
+                addChild(bmp);
+                video.attachCamera(null);
+                removeChild(video);
+            };
+            if (_arg1){
+                upload(_arg1);
+            };
+        }
+        public function upload(_arg1){
+            var ba:* = null;
+            var head:* = null;
+            var req:* = null;
+            var loader:* = null;
+            var tmpdata:* = undefined;
+            var matrix:* = undefined;
+            var url:* = _arg1;
+            if (bmpdata){
+                if ((((video_width > server_width)) && ((video_height > server_height)))){
+                    tmpdata = new BitmapData(server_width, server_height);
+                    matrix = new Matrix();
+                    matrix.scale((server_width / video_width), (server_height / video_height));
+                    tmpdata.draw(bmpdata, matrix, null, null, null, true);
+                    bmpdata = tmpdata;
+                };
+                trace("converting to jpeg");
+                encoder = new JPGEncoder(jpeg_quality);
+                ba = encoder.encode(bmpdata);
+                trace(("jpeg length: " + ba.length));
+                head = new URLRequestHeader("Accept", "text/*");
+                req = new URLRequest(url);
+                req.requestHeaders.push(head);
+                req.data = ba;
+                req.method = URLRequestMethod.POST;
+                req.contentType = "image/jpeg";
+                loader = new URLLoader();
+                loader.addEventListener(Event.COMPLETE, onLoaded);
+                trace(("sending post to: " + url));
+                try {
+                    loader.load(req);
+                } catch(error:Error) {
+                    trace("Unable to load requested document.");
+                    ExternalInterface.call("webcam.flash_notify", "error", ("Unable to post data: " + error));
+                };
+            } else {
+                ExternalInterface.call("webcam.flash_notify", "error", "Nothing to upload, must capture an image first.");
+            };
+        }
+        public function onLoaded(_arg1:Event):void{
+            var _local2:* = "unknown";
+            if (((((_arg1) && (_arg1.target))) && (_arg1.target.data))){
+                _local2 = _arg1.target.data;
+            };
+            ExternalInterface.call("webcam.flash_notify", "success", _local2);
+        }
+        public function reset(){
+            if (bmp){
+                removeChild(bmp);
+                bmp = null;
+                bmpdata = null;
+                video.attachCamera(camera);
+                addChild(video);
+            };
+        }
+        public function get_raw_data():ByteArray{
+            var _local1:ByteArray;
+            encoder = new JPGEncoder(jpeg_quality);
+            if (bmpdata){
+                _local1 = encoder.encode(bmpdata);
+            } else {
+                ExternalInterface.call("webcam.flash_notify", "error", "bmpdata does not exist");
+            };
+            return (_local1);
+        }
+        public function test_return():String{
+            return ("This is the RETURN STRING");
+        }
+
+    }
+}//package 

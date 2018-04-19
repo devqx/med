@@ -1,0 +1,24 @@
+@font-face {
+	font-family: "Therapy";
+	src: url("flaticon.eot");
+	src: url("flaticon.eot#iefix") format("embedded-opentype"),
+	url("flaticon.woff") format("woff"),
+	url("flaticon.ttf") format("truetype"),
+	url("flaticon.svg") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+[class^="therapy-"] {
+	line-height: 20px;
+	height: 20px;
+	width: 20px;
+}
+[class^="therapy-"]:before, [class*=" therapy-"]:before,
+[class^="therapy-"]:after, [class*=" therapy-"]:after {   
+	font-family: Therapy;
+	/*font-size: 60px;*/
+	font-style: normal;
+	/*margin-left: 20px;*/
+}.therapy-therapy:before {
+	content: "\e000";
+}

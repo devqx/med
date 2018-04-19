@@ -1,0 +1,537 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: robot
+ * Date: 7/8/15
+ * Time: 1:32 PM
+ */
+require_once $_SERVER['DOCUMENT_ROOT'] ."/protect.php";
+$protect = new Protect();
+$this_user = (new StaffDirectoryDAO())->getStaff($_SESSION['staffID']);
+if(!$this_user->hasRole($protect->doctor_role))
+    exit ($protect->ACCESS_DENIED);
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/DAOs/LabSpecimenDAO.php';
+$specimens = (new LabSpecimenDAO())->getSpecimens();
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/DAOs/ScanDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/DAOs/HistoryDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/api/get_lab_combos.php';
+$scanTypes = (new ScanDAO())->getScans();
+
+$HISTORY = (new HistoryDAO())->all();
+
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/DAOs/ServiceCenterDAO.php';
+$allLabCentres = (new ServiceCenterDAO())->all('Lab');
+require_once $_SERVER['DOCUMENT_ROOT']. "/classes/DAOs/SystemsReviewCategoryDAO.php";
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/PatientSystemsReview.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/SystemsReview.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/PhysicalExamination.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/PatientPhysicalExam.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/DAOs/PatientSystemsReviewDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/DAOs/SystemsReviewDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/DAOs/PhysicalExaminationDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT']. '/classes/DAOs/PatientPhysicalExamDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/AntenatalEnrollmentDAO.php';
+$pid = (new AntenatalEnrollmentDAO())->get($_GET['instance'], TRUE)->getPatient()->getId();
+if($_POST){
+//    exit("error:General Error");
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/Connections/MyDBConnector.php';
+
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/AntenatalAssessmentDAO.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/HistoryDAO.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/LabDAO.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/LabSpecimenDAO.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/PatientLabDAO.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/PatientScanDAO.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/AntenatalNoteDAO.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/VitalSignDAO.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/AntenatalAssessment.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/PatientHistory.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/PatientDemograph.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/StaffDirectory.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/PatientHistoryData.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/HistoryTemplate.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/LabGroup.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/PatientScan.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/AntenatalNote.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/class.patient.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/functions/utils.php';
+
+    try {
+        $return = array();
+        $error = array();
+        $p = new Manager;
+        $pdo = (new MyDBConnector())->getPDO();
+
+        $pdo->beginTransaction();
+        $instance = (new AntenatalEnrollmentDAO())->get($_POST['instance_id'], TRUE, $pdo);
+
+        $pid = (new AntenatalEnrollmentDAO())->get($_GET['instance'], TRUE, $pdo)->getPatient()->getId();
+
+        $patObj = $instance->getPatient();
+
+        $assessment = new AntenatalAssessment();
+        $assessment->setUser( $this_user );
+        $assessment->setDate(date("Y-m-d H:i:s", time()));
+        $assessment->setAntenatalInstance($instance);
+        $assData = [];
+
+
+
+        if(isset($_POST['history_data']) && !empty($_POST['history_data'])) {
+            /*$assessment = new AntenatalAssessment();
+            $assessment->setUser( $this_user );
+            $assessment->setDate(date("Y-m-d H:i:s", time()));
+            $assessment->setAntenatalInstance($instance);
+            $assData = [];*/
+
+            /*foreach ($_POST['history_data'] as $historyId => $Value) {
+                $pHistory = new PatientHistory();
+                $pHistory->setPatient($patObj);
+                $pHistory->setCreator(new StaffDirectory($_SESSION['staffID']));
+                $pHistDATA = [];
+                $history = (new HistoryDAO())->get($historyId, $pdo);
+
+                $pHistory->setHistory($history);
+
+                foreach ($Value as $tplId => $comment) {
+                    $pHistDatum = new PatientHistoryData();
+                    $pHistDatum->setHistoryTemplateData(new HistoryTemplate($tplId));
+                    $pHistDatum->setValue($comment);
+
+                    $pHistDATA[] = $pHistDatum;
+                }
+                $pHistory->setData($pHistDATA);
+                $assData[] = $pHistory;
+            }
+            $assessment->setData($assData);*/
+
+            /*$return['assessment'] = (new AntenatalAssessmentDAO())->add($assessment, $pdo);*/
+        }
+//        $assessment->setData($assData);
+        $return['assessment'] = (new AntenatalAssessmentDAO())->add($assessment, $pdo);
+
+
+        //todo how do we relate all the data that was collected to this VERY assessment?
+
+        //physical examination
+        $systems_reviews = array();
+        foreach($_POST['system_review'] as $systems_review){
+            if(!empty($systems_review)){
+                $systems_reviews[] = (new SystemsReviewDAO())->get($systems_review, $pdo);
+                $review = new PatientSystemsReview();
+                $review->setDate(date("Y-m-d H:i:s"))
+                    ->setPatient($patObj )
+                    ->setReviewer(new StaffDirectory($_SESSION['staffID']))
+                    ->setSystemsReview( (new SystemsReviewDAO())->get($systems_review, $pdo))
+                    ->setAssessmentInstance($return['assessment'])
+                    ->setAntenatalInstance($instance)
+                    ->setType('antenatal')
+                ;
+                $return['system_reviews'][] = (new PatientSystemsReviewDAO())->add($review, $pdo);
+            }
+        }
+
+        if(sizeof($systems_reviews)>0) { //todo: if the commit was done really
+            $sort_systems_reviews = array();
+            foreach ($systems_reviews as $k => $s) {
+                $sort_systems_reviews[$s->getCategory()->getId()][] = $s;
+            }
+            foreach($sort_systems_reviews as $sort_sr){
+                $system_review = array();
+                for($i=0; $i<count($sort_sr); $i++) {
+                    $system_review[] = $sort_sr[$i]->getName(). " (".$sort_sr[$i]->getCategory()->getName() .")";
+                }
+                $mgr = new Manager();
+                $mgr->savePatientVisitNote($_POST['pid'], implode(', ', $system_review), "revw");
+            }
+        }
+
+        $systems_reviews_ = array();
+        foreach($_POST['system_review_'] as $systems_review){
+            if(!empty($systems_review)){
+                $systems_reviews[] = (new SystemsReviewDAO())->get($systems_review, $pdo);
+                $review = new PatientSystemsReview();
+                $review->setDate(date("Y-m-d H:i:s"))
+                    ->setPatient( $patObj )
+                    ->setReviewer(new StaffDirectory($_SESSION['staffID']))
+                    ->setSystemsReview( (new SystemsReviewDAO())->get($systems_review, $pdo))
+                    ->setAssessmentInstance($return['assessment'])
+                    ->setAntenatalInstance($instance)
+                    ->setType('antenatal')
+                ;
+
+                $return['system_reviews_'][] = (new PatientSystemsReviewDAO())->add($review, $pdo);
+            }
+        }
+
+        if(sizeof($systems_reviews_)>0) {//todo: if the commit was done really
+            $sort_systems_reviews = array();
+            foreach ($systems_reviews as $k => $s) {
+                $sort_systems_reviews[$s->getCategory()->getId()][] = $s;
+            }
+
+            foreach($sort_systems_reviews as $sort_sr){
+                $system_review = array();
+                for($i=0; $i<count($sort_sr); $i++) {
+                    $system_review[] = $sort_sr[$i]->getName(). " (".$sort_sr[$i]->getCategory()->getName() .")";
+                }
+                $mgr = new Manager();
+                $mgr->savePatientVisitNote($_POST['pid'], implode(', ', $system_review), "revw");
+            }
+        }
+
+
+        if(isset($_POST['lab-reqs']) && !empty($_POST['lab-reqs'])){
+            $lr = new LabGroup();
+            $lr->setPatient($patObj);
+            $lr->setClinic($this_user->getClinic());
+            $lr->setRequestedBy($this_user);
+
+            $pref_specimens = array();
+            $sel_specimens = isset($_POST['specimen_ids'])?$_POST['specimen_ids']:[];
+            foreach ($sel_specimens as $s) {
+                if(!empty($s))
+                    $pref_specimens[] = (new LabSpecimenDAO())->getSpecimen($s, $pdo);
+            }
+            $lr->setPreferredSpecimens($pref_specimens);
+
+            $lab_data = array();
+            $tests = explode(",", $_POST['lab-reqs']);
+            foreach ($tests as $l) {
+                $lab_data[] = (new LabDAO())->getLab($l, FALSE, $pdo);
+            }
+            $lr->setRequestData($lab_data);
+            $lr->setServiceCentre( (new ServiceCenterDAO())->get($_POST['service_centre_id'], $pdo) );
+
+            $return['lab'] = (new PatientLabDAO())->newPatientLabRequest($lr, $pdo);
+        }
+
+        if(isset($_POST['scan_request_ids']) && !empty($_POST['scan_request_ids'])){
+            if(is_blank($_POST['request_note'])){
+                $pdo->rollBack();
+                exit("error:Please enter a request note");
+            }
+
+            $newScan = [];
+            foreach($_POST['scan_request_ids'] as $s){
+                $scan = new PatientScan();
+                $scan->setPatient($patObj);
+                $scan_ids = [];
+                $scan_ids[] = (new ScanDAO())->getScan($s, $pdo);
+                $scan->setScans($scan_ids);
+                $scan->setRequestDate(date("Y-m-d H:i:s"));
+                $scan->setRequestedBy($this_user);
+                $scan->setRequestNote($_POST['request_note']);
+                $newScan[] = (new PatientScanDAO())->addScan($scan, $pdo);
+            }
+            $return['imaging'] = $newScan;
+        }
+
+        if(isset($_POST['comments']) && !is_blank($_POST['comments'])){
+            $note = new AntenatalNote();
+            $note->setPatient($patObj);
+            $note->setAntenatalInstance($instance);
+            $note->setEnteredBy($this_user);
+            $note->setNote($_POST['comments']);
+
+            $return['note'] = (new AntenatalNoteDAO())->add($note, $pdo);
+        } else {
+            $pdo->rollBack();
+            exit("error:Assessment Note is required");
+        }
+
+        if(isset($_POST['bp']) && trim($_POST['bp']) != ''){
+            $ret = explode(":", $p->saveVitalSign("bp", $patObj->getId(), $_POST['bp'], NULL, $pdo));
+            sleep(0.01);
+            if ($ret[0] == "error"){ $error[] = $ret[1]; }
+            else { $return['bp'] = 'ok'; }
+        }
+        if (isset($_POST['weight']) && trim($_POST['weight']) != '') {
+            $ret = explode(":", $p->saveVitalSign("weight", $patObj->getId(), $_POST['weight'], NULL, $pdo));
+            sleep(0.01);
+            if ($ret[0] == "error"){ $error[] = $ret[1]; }
+            else { $return['weight'] = 'ok'; }
+        }
+        if (isset($_POST['height']) && trim($_POST['height']) != '') {
+            $ret = explode(":", $p->saveVitalSign("height", $patObj->getId(), $_POST['height'], NULL, $pdo));
+            sleep(0.01);
+            if ($ret[0] == "error"){ $error[] = $ret[1]; }
+            else { $return['height'] = 'ok'; }
+        }
+        if (isset($_POST['fundus_height']) && trim($_POST['fundus_height']) != '') {
+            $ret = explode(":", $p->saveVitalSign("fundus_height", $patObj->getId(), $_POST['fundus_height'], NULL, $pdo));
+            sleep(0.01);
+            if ($ret[0] == "error"){ $error[] = $ret[1]; }
+            else { $return['fundus_height'] = 'ok'; }
+        }
+        if (isset($_POST['fhr']) && trim($_POST['fhr']) != '') {
+            $ret = explode(":", $p->saveVitalSign("fhr", $patObj->getId(), $_POST['fhr'], NULL, $pdo));
+            sleep(0.01);
+            if ($ret[0] == "error"){ $error[] = $ret[1]; }
+            else { $return['fhr'] = 'ok'; }
+        }
+        if (isset($_POST['protein']) && trim($_POST['protein']) != '') {
+            $ret = explode(":", $p->saveVitalSign("protein", $patObj->getId(), $_POST['protein'], NULL, $pdo));
+            sleep(0.01);
+            if ($ret[0] == "error"){ $error[] = $ret[1]; }
+            else { $return['protein'] = 'ok'; }
+        }
+        if (isset($_POST['glucose']) && trim($_POST['glucose']) != '') {
+            $ret = explode(":", $p->saveVitalSign("glucose", $patObj->getId(), $_POST['glucose'], NULL, $pdo));
+            sleep(0.01);
+            if ($ret[0] == "error"){ $error[] = $ret[1]; }
+            else { $return['glucose'] = 'ok'; }
+        }
+        if (isset($_POST['pcv']) && trim($_POST['pcv']) != '') {
+            $ret = explode(":", $p->saveVitalSign("pcv", $patObj->getId(), $_POST['pcv'], NULL, $pdo));
+            sleep(0.01);
+            if ($ret[0] == "error"){ $error[] = $ret[1]; }
+            else { $return['pcv'] = 'ok'; }
+        }
+
+        if(count($error) > 0){
+            $pdo->rollBack();
+            exit("error: ".implode(', ', $error));
+        }
+
+        if(count($return) > 0 && !in_array(NULL, $return)){
+            $pdo->commit();
+            exit("success:Assessment Saved");
+        }
+        $pdo->rollBack();
+        exit("error:Failed to save Assessment");
+    } catch (PDOException $e){
+        errorLog($e);
+        exit("error:General Error");
+    }
+}
+
+?>
+<div style="max-width:800px;min-width:800px;width: 800px;">
+    <span></span>
+    <form method="post" name="assForm" id="assForm" action="<?= $_SERVER['REQUEST_URI'] ?>" onsubmit="return AIM.submit(this, {onStart:starter, onComplete: completer})">
+        <fieldset>
+            <legend>General Assessment</legend>
+            <?php
+            $cats1 = (new SystemsReviewCategoryDAO())->allByType("antenatal-exam");
+            ?>
+            <select id="view3" placeholder="-- Select a system category --">
+                <option></option>
+                <?php foreach ($cats1 as $category) { ?><option value="<?= $category->getId() ?>"><?= $category->getName()?></option><?php }?>
+            </select>
+            <?php foreach ($cats1 as $category) {?>
+                <dl class="systems_review hide category<?=$category->getId()?>">
+                    <dt><?= $category->getName()?></dt>
+                    <?php foreach ((new SystemsReviewDAO())->byCat($category->getId()) as $sys) {?>
+                        <dd><label><input name="system_review[]" value="<?= $sys->getId()?>" type="checkbox"> <?= $sys->getName()?></label></dd><?php }?>
+                </dl>
+            <?php }?>
+            <div class="clear"></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Laboratory Observations</legend>
+            <select id="view4" placeholder="-- Select a system category --">
+                <option></option>
+                <?php
+                $cats2 = (new SystemsReviewCategoryDAO())->allByType("antenatal-lab");
+                foreach ($cats2 as $category) { ?><option value="<?= $category->getId() ?>"><?= $category->getName()?></option><?php }?>
+            </select>
+            <?php foreach ($cats2 as $category) {?>
+                <dl class="systems_review_ hide category<?=$category->getId()?>">
+                    <dt><?= $category->getName()?></dt>
+                    <?php foreach ((new SystemsReviewDAO())->byCat($category->getId()) as $sys) {?>
+                        <dd><label><input name="system_review_[]" value="<?= $sys->getId()?>" type="checkbox"> <?= $sys->getName()?></label></dd><?php }?>
+                </dl>
+            <?php }?>
+            <div class="clear"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Vitals</legend>
+            <label>Weight <input type="number" name="weight" min="0" step="0.1"> </label>
+            <label>Height <input type="number" name="height" min="0" step="0.1"> </label>
+            <label>Fundus Height <input type="number" name="fundus_height" min="0" step="0.01"> </label>
+            <label>Fetal Heart Rate <input type="number" name="fhr" min="0" step="0.01"> </label>
+            <label>Blood Pressure <input type="text" pattern="[0-9]{2,3}\/[0-9]{2,3}" title="Example: 125/70" placeholder="Example: 125/70" name="bp"> </label>
+            <label>Protein <input type="number" min="0" name="protein"></label>
+            <label>Glucose <input type="number" min="0" name="glucose"></label>
+            <label>PCV <input type="number" min="0" name="pcv"></label>
+        </fieldset>
+
+<!--        labs -->
+        <fieldset>
+            <legend>Lab/Investigation</legend>
+            <label>Laboratory <select name="service_centre_id" placeholder="Select a receiving lab center">
+                    <option></option>
+                    <?php foreach ($allLabCentres as $center) {?>
+                        <option value="<?= $center->getId() ?>"><?= $center->getName() ?></option>
+                    <?php }?>
+                </select> </label>
+            <label>Lab Combos: <input type="hidden" id="lab-combos"></label>
+            <label>Lab tests to request:</label>
+            <label><input type="hidden" id="labs_to_request" name="lab-reqs"></label>
+            <label>Preferred Specimen(s) </label>
+            <label><select multiple="multiple" name="specimen_ids[]">
+                    <?php foreach ($specimens as $s) {
+                        echo '<option value="'.$s->getId().'">'.$s->getName().'</option>';
+                    }?>
+                </select></label>
+        </fieldset>
+        <fieldset>
+            <legend>Radiological Investigation</legend>
+            <label>Scans to Request:</label>
+            <label>
+                <select id="scan_request_ids" multiple="multiple" name="scan_request_ids[]" placeholder="select a scan">
+                    <option data-price="0"></option>
+                    <?php
+                    foreach ($scanTypes as $scan_type) {//$scan_type = new Scan();
+                        echo '<option value="'.$scan_type->getId().'" data-price="'.$scan_type->getBasePrice().'">'.$scan_type->getName().' ('.$scan_type->getCategory()->getName().')</option>';
+                    }
+                    ?>
+                </select>
+                <label>Request Note/Reason: <textarea name="request_note"></textarea></label>
+            </label>
+        </fieldset>
+        <fieldset>
+            <legend>General Comments</legend>
+            <label>General Comments <textarea name="comments" placeholder="General Comments"></textarea></label>
+        </fieldset>
+<!--        image requests-->
+<!--        comments-->
+        <input id="SaveAll" type="submit" class="btn" value="Finish" />
+        <input type="hidden" name="instance_id" value="<?= $_GET['instance']?>">
+        <input type="hidden" name="pid" value="<?=$pid?>">
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var labCs = <?=(json_encode($labCombos))?>;
+        var $Form = $('#assForm');
+        $Form.formToWizard({
+            submitButton: 'SaveAll',
+            showProgress: true, //default value for showProgress is also true
+            nextBtnName: 'Next',
+            prevBtnName: 'Previous',
+            showStepNo: true,
+            postStepFn: function () {
+                //Boxy.get($(".close")).center();
+            }
+        });
+
+        /*$(document).on('change', '#view', function(e){
+            var id = $(this).val();
+            if(!e.handled){
+                $("dl.history_data_item").removeClass("hide").addClass("hide");
+                $("dl.history_data_item.template"+id).removeClass("hide");
+                Boxy.get($(".close")).center();
+                e.handled = true;
+            }
+        });
+
+        $(document).on('change', '#view2', function(e){
+            var id = $(this).val();
+            if(!e.handled){
+                $("dl.history2_data_item").removeClass("hide").addClass("hide");
+                $("dl.history2_data_item.template"+id).removeClass("hide");
+                Boxy.get($(".close")).center();
+                e.handled = true;
+            }
+        });*/
+
+        $(document).on('change', '#view3', function(e){
+            var id = $(this).val();
+            if(!e.handled){
+                $("dl.systems_review").removeClass("hide").addClass("hide");
+                $("dl.systems_review.category"+id).removeClass("hide");
+                e.handled = true;
+            }
+        });
+
+        $(document).on('change', '#view4', function(e){
+            var id = $(this).val();
+            if(!e.handled){
+                $("dl.systems_review_").removeClass("hide").addClass("hide");
+                $("dl.systems_review_.category"+id).removeClass("hide");
+                e.handled = true;
+            }
+        });
+
+		$('.boxy-content #lab-combos').select2({
+            placeholder: "Search and select lab combos",
+            width: '100%',
+            allowClear: true,
+            data: {results: labCs, text: 'name'},
+            formatResult: function (data) {
+                return data.name;
+            },
+            formatSelection: function (data) {
+                return data.name;
+            }
+        }).change(function (e) {
+            if(e.added !== undefined){
+                select = $('.boxy-content #labs_to_request');
+                var dataOld = select.select2('data');
+                for (var i = 0; i < e.added.combos.length; i++) {
+                    dataOld.push(e.added.combos[i].lab);
+                }
+                select.select2("data", dataOld, true);
+            }
+        });
+
+        $('.boxy-content #labs_to_request').select2({
+            placeholder: "Search and select lab",
+            minimumInputLength: 3,
+            width:'100%',
+            multiple: true,
+            allowClear: true,
+            ajax: {
+                url: "/api/get_labs.php",
+                dataType: 'json',
+                data: function (term, page) {
+                    return {
+                        search: term
+                    };
+                },
+                results: function (data, page) {
+                    return {results: data};
+                }
+            },
+            formatResult: function(data) {
+                return data.name+" ("+ data.category.name+")";
+            },
+            formatSelection: function(data) {
+                return data.name+" ("+ data.category.name+")";
+            }
+
+        }).change(function(){
+//            var total = 0;
+//            $.each($(this).select2("data"), function(){
+//                total = parseFloat(this.basePrice) + total;
+//            });
+//            $("form label.output").html("Estimated Test cost: &#x20a6;"+ parseFloat(total).toFixed(2) );
+        });
+    });
+
+    var starter = function () {
+        jQuery('input[name*="history_data"]').filter(function() {
+            return !this.value;
+        }).attr('disabled', 'disabled');
+        $('.boxy-content > div > span').html('Saving...');
+    };
+
+    var completer = function(data) {
+        state = data.split(":");
+        if(state[0] === "error"){
+            jQuery('input[name*="history_data"]').filter(function() {
+                return !this.value;
+            }).removeAttr('disabled');
+            Boxy.warn(state[1]);
+        } else if(state[0] === "success"){
+            showTabs(4);
+            Boxy.info(state[1] , function () {
+                Boxy.get($(".close")).hideAndUnload();
+            });
+        }
+    };
+</script>

@@ -1,0 +1,23 @@
+.ui-notify-message {
+		background: #000;
+		background-size: 100% auto;
+		background-position: 0% 0%;
+		background-repeat: no-repeat;
+		box-shadow: 0 0 6px #12517f;
+		color: #ffffff !important;
+		/*text-shadow: 0px 2px 3px #FFFFFF;*/
+		text-align: center;
+		/*border-radius: 10px !important;*/
+	}
+
+	.ui-notify-message p {
+		font-size: small;
+		/*text-shadow: 0px 2px 3px #FFFFFF;*/
+		font-weight: bolder !important;
+	}
+
+	.ui-notify-message h1 {
+		/*font-weight: bolder !important;*/
+		font-size: 20px;
+		color: #fff !important;
+	}

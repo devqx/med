@@ -1,0 +1,34 @@
+.lock-screen {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee;
+    z-index: 2000;
+}
+
+.current-user {max-width: 50%;}
+
+.current-user * { text-align: center}
+.current-user {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    -webkit-flex-flow: column wrap;
+    flex-flow: column wrap;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+}
+
+.current-user span img {
+    border-radius:50% !important;
+}
+
+.current-user .logo {
+    width: 150px;
+}

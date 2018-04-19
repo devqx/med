@@ -1,0 +1,40 @@
+/*
+	Flaticon icon font: Flaticon
+	Creation date: 31/08/2016 13:04
+	*/
+
+@font-face {
+	font-family: "Allergen";
+	src: url("./Flaticon.eot");
+	src: url("./Flaticon.eot?#iefix") format("embedded-opentype"),
+	url("./Flaticon.woff") format("woff"),
+	url("./Flaticon.ttf") format("truetype"),
+	url("./Flaticon.svg#Flaticon") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="allergen-"] {
+	line-height: 20px;
+	height: 20px;
+	width: 20px;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+	@font-face {
+		font-family: "Allergen";
+		src: url("./Flaticon.svg#Flaticon") format("svg");
+	}
+}
+
+[class^="allergen-"]:before, [class*=" allergen-"]:before,
+[class^="allergen-"]:after, [class*=" allergen-"]:after {
+	font-family: Allergen;
+	/*font-size: 20px;*/
+	font-style: normal;
+	/*margin-left: 20px;*/
+}
+
+.allergen-virus:before {
+	content: "\f100";
+}

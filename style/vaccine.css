@@ -1,0 +1,97 @@
+.fixedColumn {
+    font-weight: bold;
+    white-space: nowrap;/**/
+    font-size: 80%;
+    /*overflow: hidden;*/
+    /*width: 50px;*/
+    /*text-overflow: ellipsis;*/
+    background-color: #eaeaea;
+    /*border-right: 1px solid #ccc;*/
+}
+.empty {
+    text-align: center !important;
+}
+div.vaccine-block {
+    text-align: center;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom:1px dotted #aaa;
+    font-size: 100%;
+    cursor: pointer;
+    text-shadow: 1px 1px 10px rgba(54, 61, 65, 1);;
+
+}
+.vaccine-block.green.done:not(.internal) {
+    opacity: 0.5;
+}
+div.vaccine-block.gray {
+    background-image: linear-gradient(bottom, #efefef 47%, #cecece 54%);
+    background-image: -o-linear-gradient(bottom, #efefef 47%, #cecece 54%);
+    background-image: -moz-linear-gradient(bottom, #efefef 47%, #cecece 54%);
+    background-image: -webkit-linear-gradient(bottom, #efefef 47%, #cecece 54%);
+    background-image: -ms-linear-gradient(bottom, #efefef 47%, #cecece 54%);
+
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.47, #efefef),
+        color-stop(0.54, #cecece)
+    );
+}
+div.vaccine-block.green {
+    background-image: linear-gradient(bottom, #648f51 47%, #ABFF9E 54%);
+    background-image: -o-linear-gradient(bottom, #648f51 47%, #ABFF9E 54%);
+    background-image: -moz-linear-gradient(bottom, #648f51 47%, #ABFF9E 54%);
+    background-image: -webkit-linear-gradient(bottom, #648f51 47%, #ABFF9E 54%);
+    background-image: -ms-linear-gradient(bottom, #648f51 47%, #ABFF9E 54%);
+    padding-left:5px;
+    padding-right:5px;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.47, #648f51),
+        color-stop(0.54, #ABFF9E)
+    );
+}
+div.vaccine-block.yellow {
+    background-image: linear-gradient(bottom, #DDE335 47%, #CCC42F 54%);
+    background-image: -o-linear-gradient(bottom, #DDE335 47%, #CCC42F 54%);
+    background-image: -moz-linear-gradient(bottom, #DDE335 47%, #CCC42F 54%);
+    background-image: -webkit-linear-gradient(bottom, #DDE335 47%, #CCC42F 54%);
+    background-image: -ms-linear-gradient(bottom, #DDE335 47%, #CCC42F 54%);
+
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.47, #DDE335),
+        color-stop(0.54, #CCC42F)
+    );
+}
+div.vaccine-block.red {
+    background-image: linear-gradient(bottom, #E06969 47%, #DB0000 54%);
+    background-image: -o-linear-gradient(bottom, #E06969 47%, #DB0000 54%);
+    background-image: -moz-linear-gradient(bottom, #E06969 47%, #DB0000 54%);
+    background-image: -webkit-linear-gradient(bottom, #E06969 47%, #DB0000 54%);
+    background-image: -ms-linear-gradient(bottom, #E06969 47%, #DB0000 54%);
+    opacity: 0.6;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.47, #E06969),
+        color-stop(0.54, #DB0000)
+    );
+}
+
+#vTable th {
+    white-space: nowrap;
+    /*font-size: 100%;*/
+}
+#vTable td, #vTable th{
+    /*border-right:1px solid #ccc;*/
+    /*font-size: 85%;*/
+    padding: 4px !important;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>jQuery.lockScreen Demo</title>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="jquery.cookie.js"></script>
+    <script type="text/javascript" src="lockscreen.min.js"></script>
+    <style type="text/css">
+      body {
+        font: 14px/20px Verdana, sans;
+        padding: 0;
+        margin: 0;
+        background: #fbfff0;
+      }
+
+      h1 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>jQuery.lockScreen Demo</h1>
+    </div>
+    <script type="text/javascript">
+      $(function() {
+        $('body').lockScreen();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+select[aria-controls] {
+	/*width: 100px;*/
+	/*min-width: 100px;*/
+	/*max-width: 100px;*/
+	/*height: 25px;*/
+	/*line-height: 20px;*/
+	/*margin: 3px;*/
+}
+
+#addItemsForm table input[type="number"] {
+	max-width:120px !important;
+	width:200px !important;
+}
+
+input[name*=_code_] {
+	width: 100px !important;
+}
+
+.contained_items {
+	margin-bottom: 4px;
+	margin-top: 0;
+	padding-top: 2px;
+	padding-left: 10px;
+	border: 1px solid #ddd;
+	border-top-width: 0;
+	border-radius: 0 0 2px 2px !important;
+}
+
+.contained_items > .service_list_box {
+	-webkit-column-count: 4;
+	-webkit-column-gap: 0;
+	-webkit-column-fill: auto;
+	-moz-column-count: 4;
+	-moz-column-gap: 0;
+	-moz-column-fill: auto;
+	column-count: 4;
+	column-gap: 0;
+	column-fill: auto;
+}
+
+.contained_items > .service_list_box li.tag, ul.list-blocks li.tag, .three-column .column {
+	display: inline-block;
+	background: #FEFEFE;
+	border: 2px solid #FAFAFA;
+	box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
+	margin:0 0 10px !important;
+	/*-webkit-column-break-inside: avoid;*/
+	/*-moz-column-break-inside: avoid;*/
+	/*column-break-inside: avoid;*/
+	padding: 5px;
+	background: -webkit-linear-gradient(45deg, #FFF, #F9F9F9);
+	opacity: 1;
+
+	-webkit-transition: all .2s ease;
+	-moz-transition: all .2s ease;
+	-o-transition: all .2s ease;
+	transition: all .2s ease;
+	width: 92% !important;
+}
+
+.contained_items > .service_list_box li:only-child:not(.tag) {
+	/*color: #4aff5d !important;*/
+	/*not working*/
+}
+
+th label { font-weight: bold;font-size: initial;}
+
+[data-name="priceEdit"], [data-class="removeItem"], [data-name="editItem"] {
+	float: right;
+}

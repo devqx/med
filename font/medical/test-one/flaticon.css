@@ -1,0 +1,208 @@
+@font-face {
+	font-family: "Flaticon";
+	src: url("flaticon.eot");
+	src: url("flaticon.eot#iefix") format("embedded-opentype"),
+	url("flaticon.woff") format("woff"),
+	url("flaticon.ttf") format("truetype"),
+	url("flaticon.svg") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
+	font-family: Flaticon;
+        font-size: 20px;
+font-style: normal;
+margin-left: 20px;
+}.flaticon-add1:before {
+	content: "\e000";
+}
+.flaticon-blood10:before {
+	content: "\e001";
+}
+.flaticon-blood9:before {
+	content: "\e002";
+}
+.flaticon-brain4:before {
+	content: "\e003";
+}
+.flaticon-brain9:before {
+	content: "\e004";
+}
+.flaticon-breathing:before {
+	content: "\e005";
+}
+.flaticon-caduceus:before {
+	content: "\e006";
+}
+.flaticon-caduceus7:before {
+	content: "\e007";
+}
+.flaticon-cells:before {
+	content: "\e008";
+}
+.flaticon-clinic1:before {
+	content: "\e009";
+}
+.flaticon-closed40:before {
+	content: "\e00a";
+}
+.flaticon-dentist16:before {
+	content: "\e00b";
+}
+.flaticon-dentist7:before {
+	content: "\e00c";
+}
+.flaticon-dosage:before {
+	content: "\e00d";
+}
+.flaticon-excretory:before {
+	content: "\e00e";
+}
+.flaticon-eye30:before {
+	content: "\e00f";
+}
+.flaticon-eye38:before {
+	content: "\e010";
+}
+.flaticon-filled4:before {
+	content: "\e011";
+}
+.flaticon-first32:before {
+	content: "\e012";
+}
+.flaticon-folder160:before {
+	content: "\e013";
+}
+.flaticon-health6:before {
+	content: "\e014";
+}
+.flaticon-heart189:before {
+	content: "\e015";
+}
+.flaticon-heart8:before {
+	content: "\e016";
+}
+.flaticon-hospital2:before {
+	content: "\e017";
+}
+.flaticon-hot19:before {
+	content: "\e018";
+}
+.flaticon-injured3:before {
+	content: "\e019";
+}
+.flaticon-life3:before {
+	content: "\e01a";
+}
+.flaticon-man366:before {
+	content: "\e01b";
+}
+.flaticon-man369:before {
+	content: "\e01c";
+}
+.flaticon-medic:before {
+	content: "\e01d";
+}
+.flaticon-medical11:before {
+	content: "\e01e";
+}
+.flaticon-medical34:before {
+	content: "\e01f";
+}
+.flaticon-medical49:before {
+	content: "\e020";
+}
+.flaticon-medical53:before {
+	content: "\e021";
+}
+.flaticon-medical54:before {
+	content: "\e022";
+}
+.flaticon-medical66:before {
+	content: "\e023";
+}
+.flaticon-medical78:before {
+	content: "\e024";
+}
+.flaticon-medical84:before {
+	content: "\e025";
+}
+.flaticon-medical86:before {
+	content: "\e026";
+}
+.flaticon-medicine16:before {
+	content: "\e027";
+}
+.flaticon-medicine17:before {
+	content: "\e028";
+}
+.flaticon-nurse2:before {
+	content: "\e029";
+}
+.flaticon-nurse9:before {
+	content: "\e02a";
+}
+.flaticon-oxygenation:before {
+	content: "\e02b";
+}
+.flaticon-person278:before {
+	content: "\e02c";
+}
+.flaticon-pharmacy12:before {
+	content: "\e02d";
+}
+.flaticon-pharmacy2:before {
+	content: "\e02e";
+}
+.flaticon-pill5:before {
+	content: "\e02f";
+}
+.flaticon-poison2:before {
+	content: "\e030";
+}
+.flaticon-pregnant6:before {
+	content: "\e031";
+}
+.flaticon-professional1:before {
+	content: "\e032";
+}
+.flaticon-research1:before {
+	content: "\e033";
+}
+.flaticon-scale13:before {
+	content: "\e034";
+}
+.flaticon-screw6:before {
+	content: "\e035";
+}
+.flaticon-share3:before {
+	content: "\e036";
+}
+.flaticon-spa23:before {
+	content: "\e037";
+}
+.flaticon-sperm1:before {
+	content: "\e038";
+}
+.flaticon-stethoscope3:before {
+	content: "\e039";
+}
+.flaticon-stethoscope6:before {
+	content: "\e03a";
+}
+.flaticon-stomach:before {
+	content: "\e03b";
+}
+.flaticon-symbolic:before {
+	content: "\e03c";
+}
+.flaticon-syringe21:before {
+	content: "\e03d";
+}
+.flaticon-tablets:before {
+	content: "\e03e";
+}
+.flaticon-tooth12:before {
+	content: "\e03f";
+}

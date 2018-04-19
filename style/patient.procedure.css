@@ -1,0 +1,4 @@
+#list2 ol { font-style:italic;}
+#list2 ol li:not(:last-of-type) {border-bottom: dotted 1px #dcdcdc }
+#list2 ol li p { padding:8px; font-style:normal;border-left: 1px solid #999; }
+#list2 ol li p em {font-family:Georgia, Times, serif; color: #777 }

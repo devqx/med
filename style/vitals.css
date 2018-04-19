@@ -1,0 +1,91 @@
+#page_ {
+	margin: 0px auto;
+	padding: 1px;
+	height: 100%;
+	width: 100%;
+	/* [disabled]border: 1px solid #000; */
+	overflow: hidden;
+}
+
+.vital_chart, #weightgraph, #heightgraph, #pulsegraph, #bpgraph, #tempgraph, #pain_scale, #respgraph, #bmigraph, #bsagraph, #fundusheightgraph, #glucosegraph, #proteingraph, #fetalheartrategraph, #dilationgraph, #progress_chart, #mid-arm-circum-graph, #head-circum-graph, #arm-length-graph, #pcv, #urinegraph, #spo2 {
+	float: left;
+	width: 805px;
+	/*border: 1px solid #CCC;*/
+	/*border-radius: 5px !important;*/
+	/*margin: 5px;
+	padding: 2px;*/
+}
+
+.last_reading, #weightLast, #heightLast, #pulseLast, #bpLast, #tempLast, #pain_scaleLast, #respLast, #bmiLast, #bsaLast, #fundusHeightLast, #glucoseLast, #proteinLast, #fhrLast, #dilationLast, #progress_new, #midArmLast, #headCircLast, #armLengthLast, #pcvLast, #urineLast, #spo2Last {
+	float: left;
+	text-align: center;
+	padding: 0 12px;
+	margin-left: 10px;
+	/*border-radius: 5px !important;*/
+	/*border: 1px solid #CCC;*/
+	width: 18%;
+	clear: right;
+}
+
+.shadow {
+	-webkit-box-shadow: 0 0 9px -1px rgba(204, 204, 204, 1);
+	-moz-box-shadow: 0 0 9px -1px rgba(204, 204, 204, 1);
+	box-shadow: 0 0 9px -1px rgba(204, 204, 204, 1);
+	height: 240px;
+	/*padding: 5px;*/
+	margin-bottom: 10px;
+}
+
+#progress_new input {
+	width: auto ! important;
+}
+
+.newBlock {
+
+}
+
+#progress_val {
+	border: 1px solid #efefef;
+	display: block;
+	width: 100%;
+}
+
+.rangeslider {
+	width: 80%;
+	margin: 1em auto;
+	height: 60px
+}
+
+fieldset {
+	margin: 0 auto;
+	width: 95%;
+	/*padding: 20px 0*/
+}
+
+input[type="range"] {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	width: 100%;
+	height: 5px;
+	background-color: rgba(21, 112, 166, 0.47);
+	/*box-shadow: inset 0px 0px 1px 1px rgba(0, 0, 0, 0.9), 0px 1px 1px 0px rgba(255, 255, 255, 0.13);*/
+}
+
+.rangeslider input::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	/*-moz-appearance: none;*/
+	width: 20px;
+	height: 20px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	-ms-border-radius: 10px;
+	-o-border-radius: 10px;
+	border-radius: 10px;
+	background-color: #11608f;
+	/*border: 1px solid #00008b;*/
+	/*background-image: -webkit-gradient(linear, left top, left bottom,color-stop(0.49, #dddddd), color-stop(0.51, #1570a6), color-stop(1, #205aa1));*/
+}
+
+.abnormal {
+	color: #F00 !important;
+}

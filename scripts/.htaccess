@@ -1,0 +1,12 @@
+ErrorDocument 400  /manuals/.error.php
+ErrorDocument 401  /manuals/.error.php
+ErrorDocument 403  /manuals/.error.php
+ErrorDocument 404  /manuals/.error.php
+ErrorDocument 405  /manuals/.error.php
+ErrorDocument 408  /manuals/.error.php
+ErrorDocument 414  /manuals/.error.php
+ErrorDocument 500  /manuals/.error.php
+ErrorDocument 502  /manuals/.error.php
+ErrorDocument 504  /manuals/.error.php
+
+DirectoryIndex .index.php

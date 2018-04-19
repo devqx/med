@@ -1,0 +1,1 @@
+<?php if(!defined("mbx")){die("You are not authorized to view this page");}?>

@@ -1,0 +1,171 @@
+#menulist {
+	display: block;
+}
+
+#menulist .menu {
+	display: block;
+	margin-top: 5px;
+}
+
+#menulist .first {
+	display: block;
+	margin-top: 0;
+}
+
+#menulist h1 {
+	padding: 0;
+	margin: 0;
+}
+
+#menulist h1 {
+	font-size: 18px;
+	color: #2677A7;
+	font-weight: bold;
+	display: block;
+}
+
+#menulist .c {
+	display: none;
+	padding: 0 20px;
+}
+
+#menulist .display {
+	display: none;
+}
+
+#create {
+	padding-bottom: 10px;
+}
+
+#create input[type="email"], select {
+	width: 100%;
+}
+
+#adminmgtmain .confstaff a, #usermgt a.sub {
+	font-weight: bold;
+	font-size: 14px;
+	margin: 6px 0 5px;
+	display: block;
+	/*color: #666;*/
+}
+
+#usermgt a.subs {
+	font-weight: bold;
+	font-size: 14px;
+	margin: 6px 10px 5px 0;
+	color: #666;
+}
+
+/*#confstaff {display: none;}*/
+#updatefee, #adddrug {
+	display: block;
+	margin-top: 5px;
+}
+
+#updatefee span, #adddrug span { /*font-weight: bold;*/
+	padding-right: 10px;
+}
+
+#updatefee input[type="number"] {
+	width: 150px;
+}
+
+#adddrug input[type="number"] {
+	width: 100%;
+	height: 30px;
+	border: 1px solid #BBB;
+	margin: 0 0 15px;
+	font-size: 15px;
+	padding-left: 5px;
+}
+
+select, input[type="email"] {
+	width: 100%;
+	height: 30px;
+	border: 1px solid #BBB;
+	margin: 0 0 15px;
+	font-size: 15px;
+	padding-left: 5px;
+}
+
+div.reportTitle {
+	text-align: center;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 22px
+}
+
+div.reportTitle h2 {
+	color: #133753;
+	display: inline-block;
+	margin: 0;
+}
+
+div.reportTitle h3 {
+	font-size: 90%;
+	font-style: italic;
+	color: #aaa;
+	text-shadow: 1px 1px #fff;
+	display: inline-block;
+	margin: 0;
+	padding-left: 9px
+}
+
+.c {
+	display: block;
+	overflow-y: hidden;
+	margin-top: -25px;
+	margin-bottom: 20px;
+	border-radius: 0 0 5px 5px;
+	padding-top: 25px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	background-color: white;
+}
+
+.c:empty {
+	display: none;
+}
+
+.c ul {
+	list-style: none;
+	margin: -10px;
+	display: inline-block;
+}
+
+.c ul:not(.tabs) li {
+	float: left;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+ul.list-blocks {
+	list-style: none;
+	padding: 0;
+	-webkit-column-count: 3;
+	-moz-column-count: 3;
+	column-count: 3;
+	-webkit-column-gap: 5px;
+	-moz-column-gap: 5px;
+	column-gap: 5px;
+}
+
+ul.list-blocks li:not(.no-border) {
+	width: 97%;
+	/*float: left; width: 22%; *//*padding: 2px 0;*//*height: 35px;*/
+}
+
+ul.list-blocks:empty {
+	display: none;}
+
+.errorBorder {
+	border: 1px solid #ca2c2c;
+}
+
+#insuredServices ul, #packageItems ul {
+	margin-left: 2px;
+}
+
+#insuredServices > ul > li.tag, #packageItems > ul > li.tag {
+	border-radius: 0 !important;
+	display: block;
+	border-bottom: 1px solid #aaa !important;
+}

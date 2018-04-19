@@ -1,0 +1,2 @@
+<?php include $_SERVER['DOCUMENT_ROOT'].'/footer.queues.php';?>
+<a href="/home.php">Home</a> | <a href="javascript:void(0)" onclick="loadOutStandingBills()">View Outstanding Patients' Bills</a> | <a href="javascript:void(0)" onclick="loadFindBills()">Find Patient's Bills</a> <?php if (isset($_SESSION['staffID'])){ ?>| <a href="/logout.php">Log Out</a><?php }?></div></footer>

@@ -1,0 +1,600 @@
+<?php
+if(!isset($_SESSION))
+    session_start();
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/PatientQueueDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/DepartmentDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/StaffSpecializationDAO.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/functions/utils.php';
+$depts = (new DepartmentDAO())->getDepartments();
+$specs = (new StaffSpecializationDAO())->getSpecializations();
+$sub_ts = (new PatientQueueDAO())->getSubTypes();
+if (isset($_GET['type'])) { ?>
+    <p></p>
+    <div class="document">
+        <?php
+        if ($_GET['type'] == 'queue') {
+            $page = (isset($_POST['page'])) ? $_POST['page'] : 0;
+            $pageSize = 10;
+
+            $ts = getTypeOptions('type', 'patient_queue');
+
+            if(isset($_POST['type'])){$_SESSION['type'] = $_POST['type'];}
+            if(isset($_POST['dept'])){$_SESSION['dept'] = $_POST['dept'];}
+            if(isset($_POST['specialty'])){$_SESSION['specialty'] = $_POST['specialty'];}
+            if(isset($_POST['patient_id'])){$_SESSION['patient_id'] = $_POST['patient_id'];}
+            $queues = (new PatientQueueDAO())->getPatientQueueFiltered(date("Y-m-d"), date("Y-m-d"), [@$_SESSION['type']], ['Active', 'Blocked'], TRUE, $page, $pageSize, @$_SESSION['dept'], @$_SESSION['specialty'], @$_SESSION['patient_id']); ?>
+
+            <div class="ui-bar-c" style="margin-bottom: 5px; overflow: hidden;font-weight:300"><span class="pull-left">Patients on Queue</span>
+                <select name="dept" id="changeDept" class="pull-left" style="font-size:small;">
+                    <option value="_">All Departments</option>
+                    <?php foreach ($depts as $dept) {?>
+                        <option value="<?=$dept->getId() ?>" <?= (isset($_SESSION['dept']) && $_SESSION['dept']==$dept->getId())?' selected="selected"':''?>><?=$dept->getName() ?></option>
+                    <?php } ?>
+                </select>
+                <select name="docstype" style="float: right; font-size:small; margin-left:20px;" id='changeDocQue'>
+                    <option value="_">All Doctors</option>
+                    <?php foreach ($specs as $sp) {?>
+                        <option value="<?=$sp->getId()?>" <?=($_SESSION['specialty']==$sp->getId()? ' selected':'')?> ><?=$sp->getName()?></option>
+                    <?php } ?>
+                </select>
+                <select name="subtype" style="float: right; font-size:small; margin-left:20px;" id='changeSubQue' placeholder="All Sub Queue">
+                    <option value="_">All Sub Queue</option>
+                    <?php foreach ($sub_ts as $t) {?>
+                        <option value="<?=$t?>"><?=$t?></option>
+                    <?php } ?>
+                </select>
+                <select name="type" style="float: right; font-size:small" id='changeQue'>
+                    <option value="_">All Queue</option>
+                    <?php foreach ($ts as $t) {?>
+                        <option value="<?=$t?>"<?= (@$_SESSION['type']==$t ? ' selected':'')?>><?=$t?></option>';
+                    <?php } ?>
+                </select></div>
+            <div id="queueTableContainer">
+                <input type="hidden" name="patient_id" value="<?= (isset($_SESSION['patient_id']) ? $_SESSION['patient_id'] : '') ?>">
+
+                <p></p>
+
+                <table class="table queue table-hover table-striped ">
+                    <thead>
+                    <tr>
+                        <th><i class="icon-info-sign" title="Check this box to remove this item from queue when clicked"></i>#</th>
+                        <th>Tag No.</th>
+                        <th>Patient</th>
+                        <th>*</th>
+                        <th>Coverage</th>
+                        <th>To see:</th>
+                        <th>Specialty</th>
+                        <th class="hide">Department</th>
+                        <th>Since:</th>
+                        <th>Blocked by</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/CreditLimitDAO.php';
+                    require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/class.bills.php';
+                    $bills = new Bills();
+                    $totalSearch = $queues->total;
+                    foreach ($queues->data as $q) {//$q=new PatientQueue();
+                        if ($q->getPatient()) {
+                            $pat = (new PatientDemographDAO())->getPatient($q->getPatient()->getId(), TRUE, NULL, NULL);
+                            $badge = $pat->getScheme()->getBadge();
+                            $scheme = $pat->getScheme()->getName();
+                            //$_ = $bills->_getPatientPaymentsTotals($pat->getId()) + $bills->_getPatientCreditTotals($pat->getId()) - (new CreditLimitDAO())->getPatientLimit($pat->getId())->getAmount();
+                            $_ = $pat->getOutstanding();
+                            $selfOwe = $_ > 0 ? $_ : 0;
+                            ?>
+                            <tr data-type="<?= $q->getType() ?>_"
+                                data-subtype="<?= (($q->getSubType() == '') ? '' : $q->getSubType() . '_') ?>"
+                                data-dept="<?= ($q->getDepartment() != null) ? $q->getDepartment()->getName() : '' ?>">
+                                <td><input type="checkbox" class="doItBox" id="qItem<?= $q->getId() ?>" data-id="<?= $q->getId() ?>"></td>
+                                <td><label for="qItem<?= $q->getId() ?>"><?= $q->getTagNo() ?></label></td>
+                                <td nowrap>
+
+                                    <a id="q<?= $q->getId() ?>"
+                                       style="padding-left:5px"<?php if ($q->getType() == "Billing" || $q->getType() == "Nursing" || $q->getType() == "Antenatal" || !$selfOwe > 0) { ?>
+                                        href="/queue.php?qid=<?= $q->getId() ?>&pid=<?= $q->getPatient()->getId() ?>&type=<?= $q->getType() ?>&fText=<?= urlencode($q->getPatient()->getFullname()) ?>" <?php } else {?> class="muted" title="Patient has outstanding balance of <?=$selfOwe?>" <?php }?>>
+                                        <?= $q->getPatient()->getFullname() ?></a>
+
+                                </td>
+                                <td><?= ($badge) ? html_entity_decode($badge->getIcon()) : '' ?></td>
+                                <td><?= $scheme ?></td>
+                                <td class="fadedText"><?= $q->getType() ?> <?= (($q->getSubType() != '') ? ' - ' . $q->getSubType() : '') ?></td>
+                                <td><?= ($q->getSpecialization() != NULL ? $q->getSpecialization()->getName() : ' - ') ?></td>
+                                <td class="hide"><?= (!is_null($q->getDepartment())) ? $q->getDepartment()->getName() : '' ?></td>
+                                <td data-since="true"
+                                    data-time="<?= $q->getEntryTime() ?>"><?= date("d-M-Y h:ia", strtotime($q->getEntryTime())) ?></td>
+                                <td>
+                                    <?= ($q->getBlockedBy() !== NULL ? $q->getBlockedBy()->getShortname() : '-') ?></td>
+                            </tr>
+                        <?php } ?>
+                    <?php } ?>
+                    </tbody>
+                </table>
+                <div class="resultsPager dataTables_wrapper no-footer">
+                    <div class="dataTables_info" id="DataTables_Table_0_info" role="status"
+                         aria-live="polite"> <?= $totalSearch ?> results found (Page <?= $page + 1 ?>
+                        of <?= ceil($totalSearch / $pageSize) ?>)
+                    </div>
+
+                    <div id="DataTables_Table_1_paginate" class="dataTables_paginate paging_simple_numbers">
+                        <a id="DataTables_Table_1_first" data-page="0"
+                           class="paginate_button previous <?= (($page + 1) == 1) ? "disabled" : "" ?>">First <?= $pageSize ?>
+                            records</a>
+                        <a id="DataTables_Table_1_previous" data-page="<?= ($page) - 1 ?>"
+                           class="paginate_button previous <?= (($page + 1) <= 1) ? "disabled" : "" ?>">Previous <?= $pageSize ?>
+                            records</a>
+                        <a id="DataTables_Table_1_last"
+                           class="paginate_button next <?= (($page + 1) == ceil($totalSearch / $pageSize)) ? "disabled" : "" ?>"
+                           data-page="<?= ceil($totalSearch / $pageSize) - 1 ?>">Last <?= $pageSize ?> records</a>
+                        <a id="DataTables_Table_1_next"
+                           class="paginate_button next <?= (($page + 1) >= ceil($totalSearch / $pageSize)) ? "disabled" : "" ?>"
+                           data-page="<?= ($page) + 1 ?>">Next <?= $pageSize ?> records</a>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                var page;
+                $(document).on('click', '.resultsPager.dataTables_wrapper a.paginate_button', function (e) {
+                    if (!e.clicked) {
+                        page = $(this).data("page");
+                        if (!$(this).hasClass("disabled")) {
+                            changeQue(page);
+                        }
+                        e.clicked = true;
+                    }
+                });
+            </script>
+        <?php }
+        else if ($_GET['type'] == 'appointmentlist') {
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 0;
+        $pageSize = 10;
+        $today = date("Y-m-d", time());
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/AppointmentDAO.php';
+        $patient = @$_POST['patient_id'];
+        $apps = (new AppointmentDAO())->getAppointmentByDate($today, $today, ['active', 'scheduled'], [], TRUE, $page, $pageSize, $patient);
+        $totalSearch = $apps->total;
+        ?>
+            <div class="ui-bar-c" style="overflow:hidden"><span class="pull-left">Active Appointments</span>
+                <select name="type" style="float: right; font-size:14px" id="changeApp">
+                    <option value="_">Today's Appointments</option>
+                    <option value="Active">Attended To</option>
+                    <option value="Scheduled">Not Attended To</option>
+                </select></div>
+            <div id="appoPatientsListContainer">
+                <p></p>
+                <input disabled type="hidden" name="patient_id" value="<?= (isset($_REQUEST['patient_id']) ? $_REQUEST['patient_id'] : '') ?>">
+                <p></p>
+                <table class="table table-hover table-striped " id="appoPatientsList">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Start Date / Time</th>
+                        <th>Patient</th>
+                        <th>Coverage</th>
+                        <th>Type</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <?php if ($totalSearch >= 1) {
+                        foreach ($apps->data as $i => $apt) {
+
+                            if ($apt->getGroup()->getPatient()) {
+                                $pat = (new PatientDemographDAO())->getPatient($apt->getGroup()->getPatient()->getId(), TRUE, NULL, NULL); ?>
+                                <tr data-type="<?= $apt->getStatus() ?>_">
+                                    <td><?= (($page * $pageSize + $i) + 1) ?></td>
+                                    <td><?= date("M jS, Y", strtotime($apt->getStartTime())) ?></td>
+                                    <td><?= $apt->getGroup()->getPatient()->getFullname() ?></td>
+                                    <td><?= $pat->getScheme()->getName() ?></td>
+                                    <td><?= $apt->getGroup()->getType() ?></td>
+                                    <td><?= (($apt->getStatus() === 'Scheduled') ? '<i class="icon-check"></i><a href="javascript:;" onclick="checkIn(this)" data-pid="' . $apt->getGroup()->getPatient()->getId() . '" data-id="' . $apt->getId() . '">Check In</a>' : '<i class="icon-time"></i><span class="fadedText"> Already Checked In</span>') ?></td>
+                                </tr>
+                            <?php }
+                        }
+                    } else { ?>
+                        <tr>
+                            <td colspan="6"><span class="warning-bar">No active appointment for today</span></td>
+                        </tr>
+                    <?php } ?>
+                </table>
+
+                <div class="appointmentsPager dataTables_wrapper no-footer">
+                    <div class="dataTables_info" id="DataTables_Table_0_info" role="status"
+                         aria-live="polite"> <?= $totalSearch ?> results found (Page <?= $page + 1 ?>
+                        of <?= ceil($totalSearch / $pageSize) ?>)
+                    </div>
+
+                    <div id="DataTables_Table_1_paginate" class="dataTables_paginate paging_simple_numbers">
+                        <a id="DataTables_Table_1_first" data-page="0"
+                           class="paginate_button previous <?= (($page + 1) == 1) ? "disabled" : "" ?>">First <?= $pageSize ?>
+                            records</a>
+                        <a id="DataTables_Table_1_previous" data-page="<?= ($page) - 1 ?>"
+                           class="paginate_button previous <?= (($page + 1) <= 1) ? "disabled" : "" ?>">Previous <?= $pageSize ?>
+                            records</a>
+
+                        <a id="DataTables_Table_1_last"
+                           class="paginate_button next <?= (($page + 1) == ceil($totalSearch / $pageSize)) ? "disabled" : "" ?>"
+                           data-page="<?= ceil($totalSearch / $pageSize) - 1 ?>">Last <?= $pageSize ?> records</a>
+                        <a id="DataTables_Table_1_next"
+                           class="paginate_button next <?= (($page + 1) >= ceil($totalSearch / $pageSize)) ? "disabled" : "" ?>"
+                           data-page="<?= ($page) + 1 ?>">Next <?= $pageSize ?> records</a>
+                    </div>
+                </div>
+            </div>
+
+        <?php }
+        else if ($_GET['type'] == 'secured') {
+            echo '<h5 class="menu-head">Secured Mails</h5>No secured mails available at this time';
+        }
+        else if ($_GET['type'] == 'notifications') {
+            echo '<h5 class="menu-head">Notifications</h5>There are no notifications at this time';
+        }
+        else if ($_GET['type'] == 'aqueue') {
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/ApprovedQueueDAO.php';
+            require_once $_SERVER['DOCUMENT_ROOT'] . '/functions/utils.php';
+            $ts = getTypeOptions('type', 'approved_queue');
+            $filter = (isset($_REQUEST['f_'])) ? $_REQUEST['f_'] : '';
+            $page = (isset($_REQUEST['page'])) ? $_REQUEST['page'] : 0;
+            $pageSize = 10;
+            $totalSearch = 0;
+
+            $data = (new ApprovedQueueDAO())->allUnread($filter, $page, $pageSize);
+            $totalSearch = $data->total;
+            $aqueues = $data->data;
+            ?>
+            <div class="ui-bar-c" style="overflow:hidden"><span class="pull-left">Approved Items Queue</span>
+                <select name="type" style="float: right; font-size:smaller" id='changeAQue'>
+                    <option value="">All Queue</option>
+                    <?php foreach ($ts as $t) {
+                        echo '<option value="' . $t . '">' . $t . '</option>';
+                    } ?>
+                </select></div>
+            <div id="queue_report_container">
+                <div class="dataTables_wrapper">
+                    <table class="table table-striped table-hover no-footer aqueue ">
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>Patient / Tag No.</th>
+                            <th>Coverage</th>
+                            <th>Category:</th>
+                            <th>Request ID:</th>
+                            <th>Time Approved:</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        foreach ($aqueues as $i => $q) {
+                            $requestId = '';
+                            if ($q->getType() == 'Lab') {
+                                $requestId .= $q->getRequest()->getLabGroup()->getGroupName();
+                            } else if ($q->getType() == 'Imaging') {
+                                $requestId .= $q->getRequest()->getRequestCode();
+                            } else if ($q->getType() == 'Ophthalmology') {
+                                $requestId .= $q->getRequest()->getOphthalmologyGroup()->getGroupName();
+                            } else if ($q->getType() == 'Dentology') {
+                                $requestId .= $q->getRequest()->getDentologyGroup()->getGroupName();
+                            }
+                            ?>
+                            <tr>
+                                <td nowrap><img class="profile_thumbnail" alt="img"
+                                                src="<?= $q->getPatient()->getPassportPath() ?>"/><a
+                                        data-id="<?= $q->getId() ?>" class="readApproved" style="padding-left:5px"
+                                        href="/patient_profile.php?id=<?= $q->getPatient()->getId() ?>&qtype=<?= strtolower($q->getType()) ?>"><?= $q->getPatient()->getFullname() ?></a>
+                                </td>
+                                <td><?= $q->getPatient()->getScheme()->getName() ?></td>
+                                <td><?= $q->getType() ?></td>
+                                <td><?= $requestId ?></td>
+                                <td><?= date('jS M, Y h:iA', strtotime($q->getApprovedTime())) ?></td>
+                            </tr>
+                        <?php }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="list1 dataTables_wrapper no-footer">
+                    <div class="dataTables_info" id="DataTables_Table_0_info" role="status"
+                         aria-live="polite"> <?= $totalSearch ?> results found (Page <?= $page + 1 ?>
+                        of <?= ceil($totalSearch / $pageSize) ?>)
+                    </div>
+                    <div id="DataTables_Table_1_paginate" class="dataTables_paginate paging_simple_numbers">
+                        <a id="DataTables_Table_1_first" data-page="0"
+                           class="paginate_button previous <?= (($page + 1) == 1) ? "disabled" : "" ?>">First <?= $pageSize ?>
+                            records</a>
+                        <a id="DataTables_Table_1_previous" data-page="<?= ($page) - 1 ?>"
+                           class="paginate_button previous <?= (($page + 1) <= 1) ? "disabled" : "" ?>">Previous <?= $pageSize ?>
+                            records</a>
+                        <a id="DataTables_Table_1_last"
+                           class="paginate_button next <?= (($page + 1) == ceil($totalSearch / $pageSize)) ? "disabled" : "" ?>"
+                           data-page="<?= ceil($totalSearch / $pageSize) - 1 ?>">Last <?= $pageSize ?> records</a>
+                        <a id="DataTables_Table_1_next"
+                           class="paginate_button next <?= (($page + 1) >= ceil($totalSearch / $pageSize)) ? "disabled" : "" ?>"
+                           data-page="<?= ($page) + 1 ?>">Next <?= $pageSize ?> records</a>
+                    </div>
+                </div>
+            </div>
+        <?php }
+        else if ($_GET['type'] == "referral"){
+            require_once $_SERVER['DOCUMENT_ROOT'] .'/classes/DAOs/ReferralsQueueDAO.php';
+            $data = (new ReferralsQueueDAO())->filter(NULL, FALSE);?>
+        <h5>Referrals List</h5>
+        <table class="table">
+        <tr><th>Date</th><th>Patient</th><th>Referrer</th><th>Note</th></tr>
+        <?php foreach ($data as $rfq) {//$rfq = new ReferralsQueue();?>
+            <tr><td><?=$rfq->getWhen()?></td><td><?= $rfq->getPatient()->getFullname()?></td><td><?= $rfq->getDoctor()->getFullname()?></td><td><?= $rfq->getNote() ?></td></tr>
+        <?php }?>
+        </table>
+        <?php }?>
+    </div>
+<?php } else { ?>
+    View <a href="?type=secured">Secured Mails</a>, <a href="?type=notifications">Notifications</a>, <a
+        href="?type=queue">Patients on Queue</a>, <a href="?type=aqueue">Approved items on Queue</a>
+<?php } ?>
+
+<script type="text/javascript" src="/assets/moment/moment.min.js"></script>
+<script type="text/javascript">
+    $(document).on('click', '.list1.dataTables_wrapper a.paginate_button', function (e) {
+        if (!e.clicked) {
+            var page = $(this).data("page");
+            if (!$(this).hasClass("disabled")) {
+                $.get('/pages/msgs/messages.php?type=aqueue&f_=<?= @$filter ?>&page=' + page, function (s) {
+                    $('#queue_report_container').html($(s).find('#queue_report_container').html());
+                });
+            }
+            e.clicked = true;
+        }
+    });
+
+    $(document).on('click', '.appointmentsPager.dataTables_wrapper a.paginate_button', function (e) {
+        if (!e.clicked) {
+            var page = $(this).data("page");
+            if (!$(this).hasClass("disabled")) {
+                $.get('/pages/msgs/messages.php?type=appointmentlist&page=' + page, function (s) {
+                    $('#appoPatientsListContainer').html($(s).find('#appoPatientsListContainer').html());
+                });
+            }
+            e.clicked = true;
+        }
+    });
+
+    $(document).ready(function () {
+        // var va = (typeof $("#changeApp").val() === "undefined") ? $("#changeQue").val() : $("#changeApp").val();
+        $('.doItBox').iCheck({checkboxClass: 'icheckbox_flat-blue'}).on('ifClicked', function(event){
+            var q = $('#q' + $(this).data("id"));
+            var href = q.attr("href");
+            if(typeof href !== "undefined"){
+                if (!event.currentTarget.checked) {//for some reason, this event is inverted
+                    q.attr("href", href + "&remove=true");
+                } else {
+                    q.attr("href", href.replace("&remove=true", ""));
+                }
+            }
+        });
+
+        //for browsers that don't support this beautiful plugin
+        $(document).on('click', '.doItBox', function () {
+            var q = $('#q' + $(this).data("id"));
+            var href = q.attr("href");
+            if(typeof href !== "undefined"){
+                if ($(this).is(":checked")) {
+                    q.attr("href", href + "&remove=true");
+                } else {
+                    q.attr("href", href.replace("&remove=true", ""));
+                }
+            }
+        });
+
+        $(document).on('click', '.readApproved', function (e) {
+            if (!e.handled) {
+                var id = $(this).data('id');
+                $.post('/ajax.readApproved.php', {q: id});
+                e.handled = true;
+                return true;
+            }
+        });
+
+        /*if (typeof localStorage.queueView === "undefined") {
+            localStorage.setItem("queueView", "_");
+        }
+        if (typeof localStorage.subQueueView === "undefined") {
+            localStorage.setItem("subQueueView", "_");
+        }
+        if (typeof localStorage.subDocQueueView === "undefined") {
+            localStorage.setItem("subDocQueueView", "_");
+        }
+        if (typeof localStorage.deptView === "undefined") {
+            localStorage.setItem("deptView", "_");
+        }
+        if (typeof localStorage.PatientId === "undefined") {
+            localStorage.setItem("PatientId", "");
+        }*/
+
+        setTimeout(function () {
+            $("#s2id_changeSubQue").hide();
+            $("#s2id_changeDocQue").hide();
+            //$("#changeQue").select2("val", localStorage.queueView).trigger("change");
+        }, 0);
+        setTimeout(function () {
+            ////$("#changeAQue").select2("val", localStorage.aQueueView).trigger("change");
+        }, 0);
+        setTimeout(function () {
+            ////$('[name="patient_id"]').select2("val", localStorage.PatientId).trigger("change");
+        }, 0);
+
+        setTimeout(function () {
+            setPatient('<?= $_GET['type']?>');
+        }, 500);
+        setInterval(function () {
+            changeQue(0);
+            //location.reload();
+//            $.get('/pages/msgs/messages.php?type=queue&page=0&f_='+$(this).val(), function(s){
+//                $('#queue_report_container').html($(s).find('#queue_report_container').html());
+//            });
+        }, 120000);
+        //reload this page every 120 seconds
+
+        //$.each($("table tr td[data-since='true']"), function (i, v) {
+            // $(this).html(moment($(this).data("time")).fromNow());
+        //});
+        $("#changeApp").select2({
+            width: '200px'
+        }).change(function () {
+        });
+        $("#changeQue").select2({
+            width: '200px'
+        }).change(function () {
+            if ($(this).val() == 'Imaging') {
+                $("#s2id_changeDocQue").hide();
+                $("#s2id_changeSubQue").show();
+                setTimeout(function () {
+                    ////$("#changeSubQue").select2("val", localStorage.subQueueView).trigger("change");
+                }, 0);
+            }
+            else if ($(this).val() == 'Doctors') {
+                $("#s2id_changeSubQue").hide();
+                $("#s2id_changeDocQue").show();
+                setTimeout(function () {
+                    ////$("#changeDocQue").select2("val", localStorage.subDocQueueView).trigger("change");
+                }, 0);
+            }
+            else {
+                $("#s2id_changeSubQue").hide();
+                $("#s2id_changeDocQue").hide();
+            }
+            ////localStorage.setItem("queueView", $(this).val());
+            setTimeout(function () {
+                ////$("#changeDept").select2("val", localStorage.deptView).trigger("change");
+            }, 2);
+            changeQue(0);
+        });
+
+        $("#changeSubQue").select2({
+            width: '200px'
+        }).change(function () {
+            ////localStorage.setItem("subQueueView", $(this).val());
+            $('table.queue').DataTable({"bStateSave": true}).column(4).search($(this).val() === "_" ? "Imaging" : $(this).val()).draw();
+        });
+        //if (typeof localStorage.aQueueView === "undefined") {
+            ////localStorage.setItem("aQueueView", "");
+        //}
+        $("#changeAQue").select2({
+            width: '200px'
+        }).change(function () {
+            ////localStorage.setItem("aQueueView", $(this).val());
+            $.get('/pages/msgs/messages.php?type=aqueue&page=0&f_=' + $(this).val(), function (s) {
+                $('#queue_report_container').html($(s).find('#queue_report_container').html());
+            });
+        });
+
+        $("#changeDocQue").select2({
+            width: '200px'
+        }).change(function () {
+            ////localStorage.setItem("subDocQueueView", $(this).val());
+            changeQue(0);
+        });
+
+        $("#changeDept").select2({
+            width: '300px'
+        }).change(function () {
+            ////localStorage.setItem("deptView", $(this).val());
+            changeQue(0);
+        });
+    });
+    function checkIn(obj) {
+        Boxy.load('/boxy.selectDepartment.php?pid=' + $(obj).data("pid") + '&qid=' + $(obj).data("id"), {title: 'Select Department'});
+    }
+
+    function changeQue(page) {
+        console.warn("reloading...");
+        var type = $("#changeQue").val();
+        var dept = $("#changeDept").val();
+        var specialist = $("#changeDocQue").val();
+        var patient = localStorage.PatientId;
+        $.post('/messaging/menu_up.php?type=<?=$_GET['type']?>', {
+            'page': page,
+            <?php if($_GET['type']=='queue'){?>'type': type,
+            'dept': dept,
+            'specialty': specialist,<?php }?>
+            'patient_id': patient
+        }, function (s) {
+            setTimeout(function () {
+                setPatient('<?= $_GET['type']?>');
+            }, 0);
+            <?php if($_GET['type']=='queue'){?>$('#queueTableContainer').html($(s).find('#queueTableContainer').html());<?php }?>
+            <?php if($_GET['type']=='appointmentlist'){?>$('#appoPatientsListContainer').html($(s).find('#appoPatientsListContainer').html());<?php }?>
+            //$.each($("table tr td[data-since='true']"), function (i, v) {
+                // $(this).html(moment($(this).data("time")).fromNow());
+            //});
+        });
+    }
+
+    function setPatient(type) {
+        var url, data;
+        if(type=='queue'){
+            url = "/api/search_queue_patients.php";
+            data = function (term, page) {
+                return {
+                    q: term,
+                    type: $("#changeQue").val(),
+                    dept: $("#changeDept").val(),
+                    specialty: $("#changeDocQue").val()
+                }
+            };
+        } else if(type=='appointmentlist'){
+            url = "/api/search_appointments_patients.php";
+            data = function (term, page) {
+                return {
+                    q: term
+                }
+            };
+        }
+        $('[name="patient_id"]').css({'font-weight': 300}).select2({
+            placeholder: "Filter List by Patient EMR or Name",
+            minimumInputLength: 3,
+            width: '100%',
+            allowClear: true,
+            ajax: {
+                url: url,
+                dataType: 'json',
+                data: data,
+                results: function (data, page) {
+                    return {results: data};
+                }
+            },
+            formatResult: function (data) {
+                return (("EMR ID:" + data.patientId + " " + data.fname + " " + data.mname + " " + data.lname));
+            },
+            formatSelection: function (data) {
+                return (("EMR ID:" + data.patientId + " " + data.fname + " " + data.mname + " " + data.lname));
+            },
+            id: function (data) {
+                return data.patientId;
+            },
+            initSelection: function (element, callback) {
+                var id = $(element).val();
+//                 var id = localStorage.PatientId;
+                if (id !== "") {
+                    $.ajax("/api/search_patients.php?pid=" + id, {
+                        dataType: "json"
+                    }).done(function (data) {
+                        callback(data);
+                        // changeQue(0);
+                    });
+                }
+            }
+        }).change(function (e) {
+            if (!e.handled) {
+                localStorage.setItem("PatientId", $(this).val());
+                changeQue(0);
+                // setPatient();
+                e.handled = true;
+            }
+        });
+    }
+</script>

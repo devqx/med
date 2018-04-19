@@ -1,0 +1,27 @@
+@font-face {
+	font-family: "Antenatal";
+	src: url("flaticon.eot");
+	src: url("flaticon.eot#iefix") format("embedded-opentype"),
+	url("flaticon.woff") format("woff"),
+	url("flaticon.ttf") format("truetype"),
+	url("flaticon.svg") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+[class^="antenatal-"] {
+	line-height: 20px;
+	height: 20px;
+	width: 20px;
+}
+[class^="antenatal-"]:before, [class*=" antenatal-"]:before,
+[class^="antenatal-"]:after, [class*=" antenatal-"]:after {   
+	font-family: Antenatal;
+/*  font-size: 20px; */
+	font-style: normal;
+/*  margin-left: 20px; */
+}.antenatal-mother:before {
+	content: "\e000";
+}
+.antenatal-writing:before {
+	content: "\e001";
+}

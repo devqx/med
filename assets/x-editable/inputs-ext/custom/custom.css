@@ -1,0 +1,9 @@
+.editable-custom {
+    display: block;
+    margin-bottom: 5px;  
+}
+
+.editable-custom span {
+    width: 70px;  
+    display: inline-block;
+}

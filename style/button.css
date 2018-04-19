@@ -1,0 +1,115 @@
+/*input[type=submit],
+input[type=button],
+button,
+.button,
+a.button,
+a.button:visited,*/
+.btn {
+	white-space: nowrap;
+}
+.btn-link, .btn-link:hover {
+	line-height:1;
+}
+.btn-link:hover {
+	background: #ccc;
+}
+
+.btn, .b-blue, .vex-dialog-button-primary, .sweet-alert button {
+	cursor: pointer;
+	line-height: 1;
+	padding: .6em .8em;
+	background: #4e82c2 !important;
+	-webkit-transition: background 0.15s ease, color 0.15s ease;
+	-moz-transition: background 0.15s ease, color 0.15s ease;
+	-ms-transition: background 0.15s ease, color 0.15s ease;
+	-o-transition: background 0.15s ease, color 0.15s ease;
+	/*background: #4ca3d7 !important;;*/
+	/*border-radius: 10px !important;*/
+	display: inline-block;
+	text-decoration: none;
+	color: #fff;
+	padding: .6em 1em .5em 1em;
+	border: 0;
+	outline: 0;
+	box-shadow: 0 3px 0 0 #086586 !important;
+	transition: background .3s ease, box-shadow .3s ease;
+	-webkit-transition: background .3s ease, box-shadow .3s ease;
+	-moz-transition: background .3s ease, box-shadow .3s ease;
+	-ms-transition: background .3s ease, box-shadow .3s ease;
+	-o-transition: background .3s ease, box-shadow .3s ease;
+}
+
+input[type=submit][disabled],
+input[type=button][disabled],
+button[disabled],
+.button[disabled],
+a.button[disabled],
+a.button:visited[disabled],
+.btn[disabled],
+input[type=submit]:disabled,
+input[type=button]:disabled,
+button:disabled,
+.button:disabled,
+a.button:disabled,
+a.button:visited:disabled,
+.btn:disabled {
+	opacity: .3;
+	pointer-events: none
+}
+
+/*input[type=submit]:hover,
+input[type=button]:hover,
+button:hover,
+.button:hover,
+a.button:hover,
+a.button:visited:hover,*/
+.btn:hover, .b-blue:hover, .sweet-alert button:hover {
+	background: #009afd !important;
+	box-shadow: 0 3px 0 0 #3767a1 !important;
+	-moz-box-shadow: 0 3px 0 0 #3767a1 !important;;
+	-webkit-box-shadow: 0 3px 0 0 #3767a1 !important;;
+	-o-box-shadow: 0 3px 0 0 #3767a1 !important
+}
+
+input[type="text"]:focus, input[type="password"]:focus, input[type="search"]:focus, input[type="month"]:focus, input[type="email"]:focus, input[type="number"]:focus, input[type="date"]:focus, input[type="url"]:focus, textarea:focus, select:focus, .select2-container .select2-choice, .select2-container.select2-container-active {
+	border-color: #D1DFE9 !important;
+	box-shadow: 0px 0px 5px rgba(94, 149, 226, 0.8) !important;
+}
+
+input[type="text"], input[type="password"], input[type="search"], input[type="month"], input[type="email"], input[type="number"], input[type="date"], input[type="url"], textarea, select,
+.select2-container .select2-choice, .select2-container-multi .select2-choices {
+	background: #FFF none repeat scroll 0% 0% !important;
+	box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.06) inset, 0px 1px 0px #FFF !important;
+	border: 1px solid #D1DFE9 !important;
+	border-radius: 2px;
+	box-sizing: border-box !important;
+	/*transition: all 0.2s ease 0s !important;*/
+}
+
+input[disabled], select[disabled], textarea[disabled], input[readonly], select[readonly], textarea[readonly] {
+	background-color: #ededed !important;
+	color: #000 !important;
+}
+
+.select2-container-multi .select2-choices .select2-search-field input {
+	border: none !important;
+	outline: 0 !important;
+	box-shadow: none !important;
+}
+
+.btn-small1 {
+	/*margin-bottom: 7px;
+	padding-bottom:4px;
+	padding-top:4px;*/
+
+	margin-bottom: 6px;
+	padding-bottom: 5px;
+	padding-top: 3px;
+}
+
+#added-regimen .btn-mini {
+	margin-left: 2px;
+}
+/*.filters.row-fluid .btn, .filters.row-fluid .btn-link {*/
+	/*line-height:0.8;*/
+/*}*/

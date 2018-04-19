@@ -1,0 +1,29 @@
+/**
+ * Created by robot on 7/23/14.
+ */
+.rb-grid {
+    list-style: none;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.rb-grid li {
+    width: 24%;
+    height: 15em;
+    margin: 0.5%;
+    background: #8CC7DF;
+    color: #fff;
+    display: block;
+    float: left;
+    padding: 1.6em;
+    cursor: pointer;
+    position: relative;
+}
+
+.rb-grid li.rb-span-2 {
+    width: 49%;
+}
+
+.rb-grid li.rb-span-4 {
+    width: 99%;
+}

@@ -1,0 +1,39 @@
+<receipt font='b' width='60'>
+    <p align='center'> $clinic </p>
+
+    <hr font='a' />
+
+    <p><span align="left"> Name </span> <span align="right"> $patientName </span></p>
+    <p><span align="left"> EMR ID </span> <span align="right"> ($emrId) </span></p>
+    <p><span align="center"> TAG NO </span> <span align="right"> $tagNo </span></p>
+    <p><span align="left"> Clinic </span> <span align="right"> $clinic_name </span></p>
+    <p><span align="left"> To see </span> <span align="right"> $specialty </span></p>
+    <p><span align="center"> Check In Time </span> <span align="right"> $check_in_time </span></p>
+
+    <barcode encoding='CODE39'>$emrId</barcode> <cashdraw />
+
+
+
+    <!--<line line-ratio='0.15' font='a'>-->
+        <!--<span></span><left> Name </left> <right align='left'>$patientName</right>-->
+    <!--</line>-->
+
+    <!--<line line-ratio='0.15' font='a'>-->
+        <!--<left> EMR ID </left><right align='left'>($emrId)</right>-->
+    <!--</line>-->
+
+    <!--<h5 align='center'>TAG NO.</h5><h1 font='a' align='center'>$tagNo</h1>-->
+
+    <!--<line line-ration='0.15' font='a'>-->
+        <!--<left> Clinic  </left><right> $clinic_name </right>-->
+    <!--</line>-->
+
+    <!--<line line-ratio='0.15' font='a'><left>To see</left><right align='left'>$specialty</right></line>-->
+
+    <!--<h5 align='center'>Check-In Time</h5><h1 font='a' align='center'>$check_in_time</h1>-->
+
+    <!--<barcode encoding='CODE39'>$emrId</barcode> <cashdraw />-->
+
+
+
+</receipt>

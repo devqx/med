@@ -1,0 +1,223 @@
+/* Cascading Style Sheet */
+meta.viewer-content {
+	display: none !important;
+}
+
+title.viewer-content {
+	text-align: center;
+	font-weight: bold;
+	border-bottom: 1px solid #e1e0db
+}
+
+.viewer-wrapper {
+	position: absolute;
+	color: #333;
+	empty-cells: show;
+	/*font-size: 90%;*/
+	/*border: 9px solid transparent;*/
+	/*background-clip: content-box;*/
+	/*border-image: url(../images/shadow.png) 9 9 repeat;*/
+	/*background-color: white;*/
+	/*box-shadow: #C3C3C3 0px 0px 35px;*/
+}
+
+.viewer-wrapper.fixed {
+	position: fixed;
+}
+
+/* Modal */
+.viewer-modal-blackout {
+	position: absolute;
+	background-color: rgba(100, 100, 100, 0.9);
+	left: 0;
+	top: 0;
+	/*opacity: 0.3;*/
+}
+
+/* Border */
+.viewer-wrapper .top-left, .viewer-wrapper .top-right, .viewer-wrapper .bottom-right, .viewer-wrapper .bottom-left {
+	width: 10px;
+	height: 10px;
+	padding: 0;
+	background-repeat: no-repeat;
+	border: none;
+}
+
+.viewer-wrapper .top-left {
+	filter: alpha(opacity=10);
+	opacity: 0.6;
+	/*background-image: url('/img/viewer/viewer-nw.png');
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/viewer-nw.png');*/
+	/*background-image: url('/img/viewer/tl.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/tl.png');*/
+}
+
+.viewer-wrapper .top-right {
+	filter: alpha(opacity=10);
+	opacity: 0.6;
+	/*background-image: url('/img/viewer/viewer-ne.png');
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/viewer-ne.png');*/
+	/*background-image: url('/img/viewer/tr.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/tr.png');*/
+	background-position: left bottom;
+}
+
+.viewer-wrapper .bottom-right {
+	filter: alpha(opacity=10);
+	opacity: 0.6;
+	/*background-image: url('/img/viewer/viewer-se.png');
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/viewer-se.png');*/
+	/*background-image: url('/img/viewer/br.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/br.png');*/
+}
+
+.viewer-wrapper .bottom-left {
+	filter: alpha(opacity=10);
+	opacity: 0.6;
+	/*background-image: url('/img/viewer/bl.png');*/
+	#background: none;
+	/*filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/viewer-sw.png');
+	background-image: url('/img/viewer/viewer-ne.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/bl.png');*/
+}
+
+/* IE6+7 hacks for the border. IE7 should support this natively but fails in conjunction with modal blackout bg. */
+/* NB: these must be absolute paths or URLs to your img/viewer */
+.viewer-wrapper .top {
+	/*filter: alpha(opacity=10);*/
+	/*opacity: 0.6;*/
+	/*background-image: url('/img/viewer/b.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/b.png');*/
+}
+
+.viewer-wrapper .rightt {
+	filter: alpha(opacity=10);
+	opacity: 0.6;
+	/*background-image: url('/img/viewer/b.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/b.png');*/
+}
+
+.viewer-wrapper .bottom {
+	filter: alpha(opacity=10);
+	opacity: 0.6;
+	/*background-image: url('/img/viewer/b.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/b.png');*/
+}
+
+.viewer-wrapper .leftt {
+	filter: alpha(opacity=10);
+	opacity: 0.6;
+	/*background-image: url('/img/viewer/b.png');*/
+	/*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/viewer/b.png');*/
+}
+
+/* Title bar */
+.viewer-wrapper .title-bar {
+	color: #999;
+	height: 1px;
+	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.65);
+	background-color: #fff;
+	*border: 0;
+	border-bottom-color: #a2a2a2;
+	padding: 0px;
+	position: relative;
+	cursor: move;
+}
+
+.viewer-wrapper .title-bar .dragging {
+	cursor: move;
+}
+
+.viewer-wrapper .title-bar h2 {
+	font-size: 12px;
+	color: #000;
+	line-height: 1;
+	margin: 0;
+	padding: 0;
+	font-weight: bold;
+}
+
+.viewer-wrapper .title-bar .close, .exit {
+	color: #efefef;
+	/*background-color: #000;*/
+	position: fixed;
+	padding: 10px !important;
+	top: 10px !important;
+	right: 10px !important;
+	font-size: 190%;
+	line-height: 1;
+	font-weight: bold;
+	text-decoration: none !important;
+}
+
+.headerTitle {
+	border-bottom: 1px solid gray;
+}
+
+.top .headerTitle {
+	background-color: #fff;
+	opacity: 1 !important;
+}
+
+/* Content Region */
+.viewer-inner {
+	background-color: white;
+	padding: 0;
+	/*border:2px solid #888;*/
+}
+
+.viewer-inner .msg_body {
+	margin-left: 50px;
+}
+
+/*@media (max-width: 1080px) {*/
+.viewer-content {
+	padding: 10px;
+	max-height: 500px;
+	overflow-y: auto;
+	min-width: 350px;
+	/*border: 1px solid #bbbbbb;
+	border-bottom-color: #a2a2a2;*/
+}
+
+/*.viewer-content .btn-block {*/
+/*position: absolute;*/
+/*bottom: 0;*/
+/*}*/
+/*}*/
+@media (max-width: 979px) {
+	.viewer-content {
+		min-width: 750px;
+	}
+}
+
+@media (max-width: 760px) {
+	.viewer-content {
+		min-width: 520px;
+	}
+}
+
+@media (max-width: 460px) {
+	.viewer-content {
+		min-width: 320px;
+	}
+}
+
+.viewer-content.table {
+	display: table !important;
+	padding: 10px;
+}
+
+/* Question Boxes */
+.viewer-wrapper .question {
+	/*width: 350px;*/
+	min-height: 80px;
+}
+
+.viewer-wrapper .answers {
+	text-align: right;
+}
+
+.viewer-content .popover {
+	opacity: 1;
+}

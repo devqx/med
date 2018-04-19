@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/adodb/adodb-php" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/google/apiclient" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/jdorn/file-system-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/jdorn/sql-formatter" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/lespoilus/spyc" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/mikecao/flight" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/phpoffice/phpexcel" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/swiftmailer/swiftmailer" />
+      <excludeFolder url="file://$MODULE_DIR$/reportsphp/vendor/twig/twig" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

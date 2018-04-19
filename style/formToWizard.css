@@ -1,0 +1,105 @@
+/* required css for formToWizard plugin */
+
+.prev {
+	float: left;
+}
+
+.next {
+	float: right;
+}
+
+.steps {
+	list-style: none;
+	/*width:100%;*/
+
+	display: flex;
+	align-items: stretch;
+	align-content: stretch;
+
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+}
+
+.steps li {
+	flex-grow: 1;
+	color: #666;
+	/*font-size: 24px;*/
+	float: left;
+	padding: 5px 10px;
+	border: 1px solid transparent;
+	/*border-left: 1px solid #ccc;*/
+	border-bottom: 1px dotted #ccc;
+	transition: all .3s;
+	-moz-transition: all .3s;
+	-webkit-transition: all .3s;
+	-o-transition: all .3s;
+	background-color: #f5f5f5;
+	margin-bottom: 10px;
+}
+
+.steps li:first-child {
+	/*border-left-width: 0;*/
+}
+
+.steps li:last-child {
+	/*flex-grow: 1;*/
+}
+
+.steps li span {
+	font-size: 13px;
+	display: block;
+}
+
+.steps li.current {
+	color: #000;
+	text-shadow: none;
+	background-color: #fff;
+	border: 1px dotted #ccc;
+	border-width: 1px 1px 0 1px;
+}
+
+.steps > li > a {
+	white-space: nowrap;
+}
+
+.stepDetails fieldset {
+	width: 100%;
+}
+
+.breadcrumb {
+	height: 40px;
+	margin: 0 auto;
+	width: 100%; /*to match that of the fieldset on vitals.css:59*/
+	background: #fff;
+}
+
+.breadcrumb li {
+	/*background: #eee;*/
+	font-size: 14px;
+	text-shadow: 0 1px 0 #fff;
+}
+
+.breadcrumb li.current:after {
+	border-top: 16px solid transparent;
+	border-bottom: 16px solid transparent;
+	border-left: 6px solid #666;
+	content: ' ';
+	position: absolute;
+	top: -3px;
+	right: -6px;
+}
+
+.breadcrumb li.current {
+	background: #666;
+	color: #eee;
+	position: relative;
+}
+
+.breadcrumb li:last-child:after {
+	border: none;
+}
+
+p[id^="step"], p[id$="commands"] {
+	/*border-bottom: 1px solid #d7d7d7;*/
+}

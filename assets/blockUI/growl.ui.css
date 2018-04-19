@@ -1,0 +1,14 @@
+.growlUI {
+    border-radius: 5px !important;
+    -webkit-box-shadow: 0 0 10px #7d7d7d;
+    -moz-box-shadow: 0 0 10px #7d7d7d;
+    box-shadow: 0 0 10px #7d7d7d;
+    background: #000 url(/img/check48.png) no-repeat 10px 10px !important;
+}
+.growlUI * {
+    font-size: 14px ;
+    color: #fff;
+    font-weight: 400 !important;
+    padding: 5px 5px 5px 75px;
+    text-align: left;
+}

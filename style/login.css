@@ -1,0 +1,10 @@
+form.loginForm {
+    background: none repeat scroll 0% 0% #FFF;
+    border-radius: 6px !important;
+    margin: 100px auto;
+    position: relative;
+    padding: 20px;
+    z-index: 682;
+    width: 380px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.45);
+}

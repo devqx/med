@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="PSK">
+<title>Medicplus - ARV Management</title>
+
+<!-- Place favicon.ico in the `app/` directory -->
+<!-- Chrome for Android theme color -->
+<meta name="theme-color" content="#2E3AA1">
+
+<!-- Web Application Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Tile color for Win8 -->
+<meta name="msapplication-TileColor" content="#3372DF">
+
+<!-- Add to homescreen for Chrome on Android -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="ARV Management">
+<link rel="icon" sizes="192x192" href="images/icon4.png">
+
+<!-- Add to homescreen for Safari on iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="ARV Management">
+<link rel="apple-touch-icon" href="images/icon4.png">
+
+<!-- Tile icon for Win8 (144x144) -->
+<meta name="msapplication-TileImage" content="images/icon4.png">
+
+<!-- build:css styles/main.css -->
+<link rel="stylesheet" href="styles/main.css">
+<!-- endbuild-->
+
+<!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+<script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+<!-- endbuild -->
+
+<script src="scripts/indexed_db.js"></script>
+<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../bower_components/angular/angular.min.js"></script>
+<script src="../bower_components/object.observe/dist/object-observe-lite.min.js"></script>
+<script src="../bower_components/ng-polymer-elements/ng-polymer-elements.js"></script>
+<script src="../bower_components/moment/min/moment.min.js"></script>
+<script src="../bower_components/angular-indexedDB/angular-indexed-db.js"></script>
+<script src="scripts/main.js"></script>
+
+<!-- Because this project uses vulcanize this should be your only html import
+     in this file. All other imports should go in elements.html -->
+<link rel="import" href="elements/elements.html">
+
+<!-- For shared styles, shared-styles.html import in elements.html -->
+<style is="custom-style" include="shared-styles"></style>
+</head>
+
+<body>
+  <span id="browser-sync-binding"></span>
+  <template is="dom-bind" id="app">
+    <paper-drawer-panel id="paperDrawerPanel" force-narrow>
+      <!-- Drawer Scroll Header Panel -->
+      <paper-scroll-header-panel drawer fixed>
+        <!-- Drawer Toolbar -->
+        <paper-toolbar id="drawerToolbar">
+          <span class="menu-name"><a href="/">Medic<span class="color">plus</span></a></span>
+        </paper-toolbar>
+        <!-- Drawer Content -->
+        <paper-menu attr-for-selected="data-route" selected="[[route]]">
+          <a data-route="enroll-patient" href="{{baseUrl}}enroll"><span>Enroll Patient</span></a>
+          <a data-route="patients-list" href="{{baseUrl}}patients"><span>Enrolled Patients</span></a>
+          <a data-route="search-patients" href="{{baseUrl}}search"><span>Search ...</span></a>
+        </paper-menu>
+      </paper-scroll-header-panel>
+      <!-- Main Area -->
+      <paper-scroll-header-panel main id="headerPanelMain" condenses keep-condensed-header mode="waterfall-tall" shadow="true">
+        <!-- Main Toolbar -->
+        <paper-toolbar id="mainToolbar" class="tall">
+          <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+          <span class="space"></span>
+          <!-- Application name -->
+          <div class="middle middle-container">
+            <div class="app-name">ARV Management</div>
+          </div>
+          <paper-menu-button horizontal-align="right" vertical-offset="10" horizontal-offset="20">
+            <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
+            <paper-menu class="dropdown-content">
+              <paper-item on-tap="syncData"><iron-icon icon="icons:autorenew"></iron-icon>Sync Data to Server</paper-item>
+              <paper-item on-tap="showHelp"><iron-icon icon="icons:help"></iron-icon>Help</paper-item>
+            </paper-menu>
+          </paper-menu-button>
+        </paper-toolbar>
+        <!-- Main Content -->
+        <div class="content">
+          <iron-pages attr-for-selected="data-route" selected="{{route}}">
+            <section data-route="enroll-patient">
+              <paper-material elevation="1">
+                <h2 class="page-title">Enroll Patient</h2>
+                <form is="iron-form" id="enroll-patient" method="post" action="/">
+                  <paper-input name="patientId" id="emrId" label="Patient EMR ID" required auto-validate pattern="^[0-9]*$">
+                    <paper-icon-button icon="search" suffix on-tap="lookUpPatient"></paper-icon-button>
+                  </paper-input>
+                  <paper-input name="patientName" label="Patient Name" value="{{patientName}}" required auto-validate></paper-input>
+                  <paper-input name="patientDOB" label="Date of birth" type="date" value="{{patientDOB}}" always-float-label required auto-validate></paper-input>
+                  <paper-input name="uniqueID" label="Unique ID" mask="" value="{{uniqueId}}" required auto-validate></paper-input>
+                  <paper-input name="dateEnrolledIntoCare" label="Date enrolled into Care" type="date" value="{{dateEnrolledIntoCare}}" always-float-label required auto-validate></paper-input>
+                  <paper-input style="display: none;" name="passport" value="{{passport}}" required auto-validate></paper-input>
+                  <div class="horizontal-section input-block">
+                    <label class="block">Care Entry Point</label>
+                    <template is="dom-bind" items="{{careEntryPoints}}" id="t">
+                      <paper-radio-group required auto-validate name="careEntryPoint" id="careEntryPoint">
+                        <template is="dom-repeat" items="{{careEntryPoints}}">
+                          <paper-radio-button name="{{item.id}}">{{item.name}}</paper-radio-button>
+                        </template>
+                      </paper-radio-group>
+                    </template>
+
+                  </div>
+                  <paper-input name="dateHIVConfirmedTest" label="Date of Confirmed HIV Test" type="date" value="{{dateHIVConfirmedTest}}" always-float-label required auto-validate></paper-input>
+                  <paper-input name="locationOfTest" label="Where (Location of Test)" value="{{locationOfTest}}" required auto-validate></paper-input>
+
+                  <paper-dropdown-menu label="Mode of Test" name="modeOfTest" required auto-validate>
+                    <paper-menu class="dropdown-content" selected="{{modeOfTest}}">
+                      <template is="dom-repeat" items="{{modesOfTest}}">
+                        <paper-item name="{{item.id}}">{{item.name}}</paper-item>
+                      </template>
+                    </paper-menu>
+                  </paper-dropdown-menu>
+                  <paper-dropdown-menu label="Prior ART" name="priorART" required auto-validate>
+                    <paper-menu class="dropdown-content" selected="{{priorART}}">
+                      <template is="dom-repeat" items="{{priorARTs}}">
+                        <paper-item name="{{item.id}}">{{item.name}}</paper-item>
+                      </template>
+                    </paper-menu>
+                  </paper-dropdown-menu>
+
+                  <paper-button class="input-block" onclick="enrollPatient(event)">Save</paper-button>
+                  <a class="input-block" href$="{{baseUrl}}patients" onclick="clearThisFrm('enroll-patient')"><paper-button>Cancel</paper-button></a>
+                </form>
+              </paper-material>
+            </section>
+            <section data-route="patients-list">
+              <div class="listItems">
+                <iron-selector attr-for-selected="pid" on-tap="_itemSelected">
+                  <iron-list id="itemsList" items="{{arvPatients}}" as="item" animated>
+                    <template>
+                      <div class="list">
+                        <paper-ripple style="color:#4e82c2"></paper-ripple>
+                        <div class="item " pid="{{item.patientId}}" tabindex$="{{tabIndex}}">
+                          <img class="avatar" pid="{{item.patientId}}" src="{{item.passport}}">
+                          <div class="pad" pid="{{item.patientId}}">
+                            <div class="primary" pid="{{item.patientId}}">
+                              {{item.patientName}}
+                            </div>
+                            <div class="secondary dim" pid="{{item.patientId}}">
+                              Date Enrolled: <span>{{formatDate(item.dateEnrolled)}}</span>
+                            </div>
+                          </div>
+
+
+                        </div>
+                        <div class="border"></div>
+                      </div>
+                    </template>
+                  </iron-list>
+                </iron-selector>
+              </div>
+
+
+              <!--<div class="cards">
+                <template is="dom-repeat" items="{{arvPatients}}">
+                  <paper-card style="" heading="{{item.patientName}}" image="{{item.passport}}" data-id="{{item.patientId}}">
+                    <div class="card-content">
+                      <div>Date Enrolled: <br><span>{{formatDate(item.dateEnrolled)}}</span></div>
+                    </div>
+                    <div class="card-actions">
+                      <a href$="{{baseUrl}}patient/{{item.patientId}}"><paper-button class="link">View Profile <iron-icon icon="icons:arrow-forward"></iron-icon></paper-button></a>
+                      <paper-icon-button icon="more-vert" style="float:right"></paper-icon-button>
+                    </div>
+                  </paper-card>
+                </template>
+              </div>-->
+            </section>
+            <section data-route="patient-profile">
+              <paper-material elevation="1">
+                <a href$="{{baseUrl}}patients">
+                  <paper-button class="link">
+                    <iron-icon icon="hardware:keyboard-backspace"></iron-icon> Patients List
+                  </paper-button>
+                </a>
+                <paper-card id="patientProfileData" elevation="0">
+                  <div class="card-content">
+                    <iron-image style="width:200px; height:200px; background-color: lightgray;border-radius: 50%; float:left"
+                                sizing="cover" preload fade src="{{patientArvData.passport}}"></iron-image>
+                    <div class="md-4">
+                      <div class="header style-scope paper-card">
+                        <div class="title-text style-scope paper-card" style="padding-left:0">{{patientArvData.patientName}}</div>
+                      </div>
+
+                      <p>{{patientArvData.patientAge}} years old</p>
+                      <p><strong>Enrolled:</strong> <span>{{formatDateTime(patientArvData.dateEnrolled)}}</span></p>
+                      <paper-button class="link" on-tap="doCloseMgt" style="font-size: small;margin-left:0;padding-left: 0;">
+                        <iron-icon icon="icons:block" style="width: 16px;margin-right: 5px"></iron-icon>Close Management
+                      </paper-button>
+                    </div>
+                  </div>
+                </paper-card>
+                <paper-tabs selected="{{selected}}" style="box-shadow: 0 8px 5px -5px rgba(20,20,20,0.3);">
+                  <paper-tab>Details</paper-tab>
+                </paper-tabs>
+                <iron-pages id="profile-page" selected="{{selected}}">
+                  <div class="tab">
+                    <div>
+                      Details in details
+                    </div>
+                    <!--<paper-fab icon="add" title="Record delivery" on-tap="newDelivery"></paper-fab>-->
+                  </div>
+                </iron-pages>
+              </paper-material>
+              <paper-dialog id="confirmCloseMgt" modal entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+                <h2>Close Management</h2>
+                <div>Are you sure to close the management of this patient?</div>
+                <div class="buttons">
+                  <paper-button class="link" dialog-dismiss>Not really</paper-button>
+                  <paper-button class="link" dialog-confirm on-tap="__doCloseMgt">Sure</paper-button>
+                </div>
+              </paper-dialog>
+            </section>
+            <section data-route="search-patients">
+              <paper-material elevation="1">
+                <form is="iron-form" method="post" action="/">
+                  <paper-input name="patientID" id="emrId" label="Search by Patient EMR ID"></paper-input>
+                  <paper-button icon="search">FIND</paper-button>
+                </form>
+
+              </paper-material>
+
+            </section>
+
+            <section data-route="error-page">
+              <paper-material elevation="1">
+                <h1 align="center">404.</h1>
+
+                <h5 align="center">The requested page was not found</h5>
+              </paper-material>
+            </section>
+          </iron-pages>
+        </div>
+      </paper-scroll-header-panel>
+    </paper-drawer-panel>
+    <paper-toast id="toast" text="{{dataInfo}}" duration="5000">
+      <span class="toast-hide-button" role="button" tabindex="0" style="color: #4e82c2;margin: 10px" onclick="app.$.toast.hide()">Close</span>
+    </paper-toast>
+
+    <paper-dialog id="dialog" modal>
+      <h2>Help</h2>
+      <p>Help Data is not available at the moment.</p>
+      <div class="buttons">
+        <paper-button class="link" dialog-dismiss>Ok, Got it</paper-button>
+      </div>
+    </paper-dialog>
+    <paper-dialog id="appDialog" modal>
+      <h2>Message</h2>
+      <p>{{messageInfo}}</p>
+      <div class="buttons">
+        <paper-button class="link" dialog-dismiss>Close</paper-button>
+      </div>
+    </paper-dialog>
+
+    <paper-dialog id="backdrop" modal with-backdrop style="display: flex;flex-direction: column;align-items: center;justify-content: center;width:75px;height:75px;border-radius:50px">
+      <paper-spinner active></paper-spinner>
+    </paper-dialog>
+    <!-- Uncomment next block to enable Service Worker support (1/2) -->
+    <paper-toast id="caching-complete" duration="6000" text="Caching complete! This app will work offline."></paper-toast>
+
+    <platinum-sw-register auto-register clients-claim skip-waiting base-uri="bower_components/platinum-sw/bootstrap" on-service-worker-installed="displayInstalledToast">
+      <platinum-sw-cache default-cache-strategy="fastest" cache-config-file="cache-config.json"></platinum-sw-cache>
+    </platinum-sw-register>
+  </template>
+  <!-- build:js scripts/app.js -->
+  <script src="scripts/app.js"></script>
+  <!-- endbuild-->
+</body>
+</html>

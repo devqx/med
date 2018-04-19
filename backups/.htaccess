@@ -1,0 +1,12 @@
+ErrorDocument 400  /backups/.error.php
+ErrorDocument 401  /backups/.error.php
+ErrorDocument 403  /backups/.error.php
+ErrorDocument 404  /backups/.error.php
+ErrorDocument 405  /backups/.error.php
+ErrorDocument 408  /backups/.error.php
+ErrorDocument 414  /backups/.error.php
+ErrorDocument 500  /backups/.error.php
+ErrorDocument 502  /backups/.error.php
+ErrorDocument 504  /backups/.error.php
+
+DirectoryIndex .index.php

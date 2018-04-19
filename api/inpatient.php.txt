@@ -1,0 +1,61 @@
+<?php
+
+if (!isset($_SESSION)) {
+    @session_start();
+}
+
+if (!isset($_SESSION['staffID'])) {
+    echo json_encode("Login required!!!");
+    exit();
+}
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $ROOT = $_SERVER ['DOCUMENT_ROOT'];
+    if ($_GET['action'] == 'getInPatientList') {
+        require_once $ROOT . '/classes/DAOs/AdmissionDAO.php';
+        $pdDAO = new AdmissionDAO();
+        $staff = $_SESSION["staffID"];
+        $admissions = $pdDAO->getAdmissions();
+
+        header('Content-Type: application/json');
+        $data = json_encode($admissions);
+        echo $data;
+    } else if ($_GET['action'] == 'getMedications') {
+        $admissionId = $_REQUEST['admissionId'];
+        require_once $ROOT . '/classes/DAOs/PatientMedicamentDAO.php';
+        $medDAO = new PatientMedicamentDAO();
+        $notes = $medDAO->getMedicaments($admissionId);
+        header('Content-Type: application/json');
+        $data = json_encode($notes);
+        echo $data;
+    } else if (FALSE) {
+        
+    } else if ($_GET['action'] == 'getDrugs') {
+        include_once $_SERVER ['DOCUMENT_ROOT'] . '/classes/DAOs/DrugDAO.php';
+        $dao = new DrugDAO();
+        $drugs = $dao->getDrugs();
+
+        header('Content-Type: application/json');
+
+        $data = json_encode($drugs);
+        echo $data;
+    }
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_GET['action'] == 'addMedication') {
+        include_once $_SERVER ['DOCUMENT_ROOT'] . '/classes/PatientMedicament.php';
+        include_once $_SERVER ['DOCUMENT_ROOT'] . '/classes/DAOs/PatientMedicamentDAO.php';
+        $pM = new PatientMedicament();
+        $pM->setAdmissionId($_POST['admissionId']);
+        $pM->setDrug($_POST['drug']);
+        $pM->setMethod($_POST['method']);
+        $pM->setEvery($_POST['every']);
+        $pM->setDosage($_POST['dosage']);
+        $pM->setInterval($_POST['interval']);
+        $pM->setTimeStrick(1);
+        $dao = new PatientMedicamentDAO();
+        $notes = $dao->addMedicament($pM);
+        header('Content-Type: application/json');
+        $data = json_encode($notes);
+        echo $data;
+    }
+}
+?>
