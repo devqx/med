@@ -3,6 +3,7 @@ include_once $_SERVER ['DOCUMENT_ROOT'] . '/classes/DAOs/StateDAO.php';
 
 $dao=new StateDAO();
 $states=$dao->getStates(TRUE);
+
 if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
 // // header('Content-Type: application/json');
     $data = json_encode($states);

@@ -47,6 +47,7 @@ class StateDAO {
 	}
     
     function getStates($getFull=FALSE){
+
         $states=array();
         try {                
             $pdo=$this->conn->getPDO();

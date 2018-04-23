@@ -9,10 +9,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/PatientDemographDAO.php'
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/AntenatalEnrollmentDAO.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/ImmunizationEnrollmentDAO.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/PatientAttachmentDAO.php';
-require_once 'InPatientHealthState.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/InPatientHealthDAO.php';
 
 
-$inp_health_state = ( new InPatientHealthState() )->getInPatientHealthState($pid);
+$inp_health_state = ( new InPatientHealthDAO() )->getInPatientHealthState($pid);
 $_patient = (new PatientDemographDAO())->getPatient($pid, TRUE, null, null);
 $aEnroll = (new AntenatalEnrollmentDAO())->get($pid);
 $iEnroll = (new ImmunizationEnrollmentDAO())->getImmunizationEnrollment($pid);
@@ -98,28 +98,7 @@ $admInstances = (new InPatientDAO())->getInPatientInstances($pid, FALSE); ?>
 
 
     <div class="pull-right " style="padding:0 5px">
-        <a href="javascript:;" onclick="Boxy.load('/admissions/boxy.in_patient_health.edit.php?pid=<?php echo $_patient->getId(); ?>')" title="Patient's Health Status - <?php echo $inp_health_state['state'];?>" id="phealth_status">
-            <?php if( $inp_health_state['state'] == "Stable"){?>
 
-                <i class="fa fa-circle fa-2x notif-icons"  style="color:#32C744;cursor: pointer"></i>
-                <?php }?>
-
-            <?php if( $inp_health_state['state'] == "Critical"){?>
-
-                <i class="fa fa-circle fa-2x notif-icons" style="color:red;cursor: pointer"></i>
-            <?php }?>
-
-            <?php if( $inp_health_state['state'] == "Intermediate"){?>
-
-                <i class="fa fa-circle fa-2x notif-icons" style="color:yellow;cursor: pointer"></i>
-            <?php }?>
-
-            </i></a>
-
-        <?php if($inp_health_state['risk_to_fall'] == 1){?>
-            <i onclick="Boxy.load('/admissions/boxy.in_patient_health.edit.php?pid=<?php echo $_patient->getId(); ?>')" class="fa fa-exclamation-triangle notif-icons fa-2x" style="color:red;cursor: pointer" title=" Patient's Risk To Fall "> </i>
-
-        <?php }?>
 
     </div>
 
@@ -159,8 +138,47 @@ $admInstances = (new InPatientDAO())->getInPatientInstances($pid, FALSE); ?>
 	</div>
 	
 	<?php if ($ip->getStatus() == 'Active') { ?>
+
+    <div class="item_block pull-left">
+
+        <a href="javascript:;" onclick="Boxy.load('/admissions/boxy.in_patient_health.edit.php?pid=<?php echo $_patient->getId(); ?>')" title="Patient's Health Status - <?php echo $inp_health_state->getHealthStatusId();?>" id="phealth_status">
+
+            <?php if( $inp_health_state->getHealthStatusId() == "Stable"){?>
+
+                <span class="badge badge-success"  style="cursor: pointer;background: #32c744"> Health Status - <?php echo  $inp_health_state->getHealthStatusId();?> </span>
+            <?php }?>
+
+            <?php if( $inp_health_state->getHealthStatusId() == "Critical"){?>
+
+<!--                <i class="fa fa-circle fa-2x notif-icons" style="color:red;cursor: pointer"></i>-->
+                <span class="badge badge-danger"  style="cursor: pointer;background: red;"> Health Status - <?php echo  $inp_health_state->getHealthStatusId();?> </span>
+            <?php }?>
+
+            <?php if( $inp_health_state->getHealthStatusId() == "Intermediate"){?>
+
+<!--                <i class="fa fa-circle fa-2x notif-icons" style="color:yellow;cursor: pointer"></i>-->
+                <span class="badge badge-warning"  style="cursor:pointer;background: yellow;"> Health Status - <?php echo  $inp_health_state->getHealthStatusId();?> </span>
+            <?php }?>
+
+            </a>
+
+        <?php if($inp_health_state->getRiskToFall() == 1){?>
+            <span onclick="Boxy.load('/admissions/boxy.in_patient_health.edit.php?pid=<?php echo $_patient->getId(); ?>')" class="badge badge-danger" style="cursor:pointer;background: grey" title=" Patient's Risk To Fall "> RTF - Yes  </span>
+
+        <?php }?>
+
+        <?php if($inp_health_state->getRiskToFall() == 0){?>
+            <span onclick="Boxy.load('/admissions/boxy.in_patient_health.edit.php?pid=<?php echo $_patient->getId(); ?>')" class="badge badge-danger" style="cursor: pointer;background:#32C744" title=" Patient's Risk To Fall "> RTF - No  </span>
+
+        <?php }?>
+
+
+    </div>
+
 		<div class="item_block pull-right">
 			<span></span>
+
+
 			<span>
                 <button class="drop-btn" title="Admitted click to discharge" onclick="Boxy.ask('Are you sure you want to discharge this patient?', ['Yes', 'No'], function (choice) {
 					if (choice === 'Yes') {
@@ -169,7 +187,7 @@ $admInstances = (new InPatientDAO())->getInPatientInstances($pid, FALSE); ?>
 					})">Discharge</button>
             </span>
 
-            <?php if(empty( $inp_health_state['state'] )){?>
+            <?php if(empty( $inp_health_state->getHealthStatusId() )){?>
             <span>
             <button class="drop-btn" onclick="Boxy.load('/admissions/boxy.in_patient_health.edit.php?pid=<?php echo $_patient->getId(); ?>')">
                 Add Health State

@@ -11,9 +11,13 @@ if($_POST ){
 
     try{
 
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/admissions/InPatientHealthState.php';
+
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/InPatientHealthState.php';
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/InPatientHealthDAO.php';
 
         $inp = new InPatientHealthState();
+        $inp_dao = new InPatientHealthDAO();
+
 
         $request = [];
         foreach ($_POST as $key=>$value){
@@ -25,8 +29,15 @@ if($_POST ){
         $inp
             ->setHealthStatusId($request->health_state)
             ->setPatientId($request->in_pid)
-            ->setRiskToFall($request->risk_to_fall)
-            ->updatePatientHealthStatus();
+            ->setRiskToFall($request->risk_to_fall);
+
+        //save
+
+
+
+
+        $inp_dao->updatePatientHealthStatus( $inp );
+
 
         echo "Patient Health Updated successfully";
 

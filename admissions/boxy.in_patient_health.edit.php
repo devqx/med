@@ -8,17 +8,17 @@
 
 
 //get all the health state possible
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admissions/InPatientHealthState.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/InPatientHealthDAO.php';
 
-$health_states = ( new InPatientHealthState() )->getAllHealthStates();
+$health_states = ( new InPatientHealthDAO() )->getAllHealthStates();
 
 //in_patient id
 $pid = $_GET['pid'];
 
 //fetch the old values of the health state and the risk to fall
-$phealth = ( new InPatientHealthState() )->getInPatientHealthState($pid);
+$phealth = ( new InPatientHealthDAO() )->getInPatientHealthState($pid);
 
-//error_log(json_encode($phealth));
+
 
 
 ?>
@@ -35,7 +35,7 @@ $phealth = ( new InPatientHealthState() )->getInPatientHealthState($pid);
 
                 <?php foreach( $health_states as $state ){?>
 
-                    <option value="<?php echo $state['id'] ;?>" <?php echo !empty( $phealth['id'] ) == $state['id']   ? 'selected' : '';?> > <?php echo $state['state'] ;?> </option>
+                    <option value="<?= $state->getId() ;?>" <?= $state->getState()  == $phealth->getHealthStatusId() ?  "selected" : ''?>  > <?= $state->getState() ;?> </option>
 
 
                 <?php }?>
@@ -48,8 +48,8 @@ $phealth = ( new InPatientHealthState() )->getInPatientHealthState($pid);
             <select name="risk_to_fall">
 
                 <option>...</option>
-                <option <?php echo !empty( $phealth['risk_to_fall'] ) == 1 ?  "selected" : ''?> value="1">Yes</option>
-                <option <?php echo !empty( $phealth['risk_to_fall'] ) == 0 ?  "selected" : ''?> value="0">No</option>
+                <option <?php echo !empty( $phealth->getRiskToFall() ) == 1 ?  "selected" : ''?> value="1">Yes</option>
+                <option <?php echo !empty( $phealth->getRiskToFall() ) == 0 ?  "selected" : ''?> value="0">No</option>
 
             </select>
         </div>

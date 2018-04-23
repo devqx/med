@@ -7,14 +7,13 @@
  */
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/InPatientDAO.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/admissions/InPatientHealthState.php';
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DAOs/InPatientHealthDAO.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/functions/utils.php';
 $ward = (isset($_POST['ward_id']) && !is_blank($_POST['ward_id'])) ? $_POST['ward_id'] : null;
 $block = (isset($_POST['block_id']) && !is_blank($_POST['block_id'])) ? $_POST['block_id'] : null;
 $h_id = (isset($_POST['health_state_id']) && !is_blank($_POST['health_state_id'])) ? $_POST['health_state_id'] : null;
 
-$health_states = ( new InPatientHealthState() )->getAllHealthStates();
+$health_states = ( new InPatientHealthDAO() )->getAllHealthStates();
 
 $pageSize = 10;
 $page = (isset($_REQUEST['page'])) ? $_REQUEST['page'] : 0;
@@ -60,9 +59,9 @@ if (!isset($_GET['outpatient'])) {
         <label class="span2">
             <select name="health_state">
                 <option>-- Health State Filter --</option>
-                <?php foreach ($health_states as $key => $val ){?>
+                <?php foreach ($health_states as $state ){?>
 
-                    <option value="<?php echo $val['id'];?>" <?php if( @$_POST['health_state_id'] ===  $val['id'] ) { ?> selected="selected"<?php } ?> );?> <?php echo $val['state'];?></option>
+                    <option value="<?= $state->getId();?>" <?php if( @$_POST['health_state_id'] === $state->getId() ) { ?> selected="selected"<?php } ?> > <?=$state->getState();?></option>
 
                 <?php } ?>
             </select>
@@ -81,7 +80,7 @@ if (!isset($_GET['outpatient'])) {
 		</thead>
 		<tbody>
 		<?php foreach ($inPatients->data as $ip) {
-			if ($ip->active) { $inp_health_state = ( new InPatientHealthState() )->getInPatientHealthState($ip->patient_id); //$ip = new InPatient();?>
+			if ($ip->active) { $inp_health_state = ( new InPatientHealthDAO() )->getInPatientHealthState($ip->patient_id); //$ip = new InPatient();?>
 				<tr>
 					<td>
 						<a class="profile" data-pid="<?= $ip->patient_id ?>" href="/admissions/inpatient_profile.php?pid=<?= $ip->patient_id ?>&aid=<?= $ip->id ?>">
@@ -89,31 +88,48 @@ if (!isset($_GET['outpatient'])) {
 
                         <?php
 
-                        $inp_health_state = ( new InPatientHealthState() )->getInPatientHealthState($ip->patient_id);
+                        $inp_health_state = ( new InPatientHealthDAO() )->getInPatientHealthState($ip->patient_id);
 
-                        if( ! empty($inp_health_state['state'] ) ){?>
+                        if( ! empty($inp_health_state->getHealthStatusId() ) ) { ?>
 
-                            <?php if( $inp_health_state['state'] == "Stable"){?>
+                            <?php if( $inp_health_state->getHealthStatusId() == "Stable"){?>
 
-                                <i class="fa fa-circle fa-2x " title="<?php echo $ip->patientName;?>'s Health Status " style="color:#32C744;cursor: pointer"></i>
+                                <!--                                <i class="fa fa-circle" title="--><?php //echo $ip->patientName;?><!--'s Health Status " style="color:#32C744;cursor: pointer"></i>-->
+                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" title="<?php echo $ip->patientName;?>'s Health Status - <?= $inp_health_state->getHealthStatusId();?> "
+                                     width="16" height="16"
+                                     viewBox="0 0 252 252"
+                                     style="fill:#000000;"><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="none" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,252v-252h252v252z" stroke="none" stroke-width="1" stroke-miterlimit="10"></path><g stroke="#2ecc71" stroke-width="21" stroke-miterlimit="4"><g id="surface1"><path d="M86.87109,220.5l-55.37109,-55.37109v-78.25781l55.37109,-55.37109h78.25781l55.37109,55.37109v78.25781l-55.37109,55.37109z"></path></g></g></g></svg>
                             <?php }?>
 
-                            <?php if( $inp_health_state['state'] == "Critical"){?>
-
-                                <i class="fa fa-circle fa-2x" title="<?php echo $ip->patientName;?>'s Health Status " style="color:red;cursor: pointer"></i>
+                            <?php if( $inp_health_state->getHealthStatusId() == "Critical"){?>
+                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" title="<?php echo $ip->patientName;?>'s Health Status - <?= $inp_health_state->getHealthStatusId() ;?> "
+                                     width="16" height="16"
+                                     viewBox="0 0 252 252"
+                                     style="fill:#000000;"><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="none" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,252v-252h252v252z" stroke="none" stroke-width="1" stroke-miterlimit="10"></path><g stroke="#c0392b" stroke-width="21" stroke-miterlimit="4"><g id="surface1"><path d="M86.87109,220.5l-55.37109,-55.37109v-78.25781l55.37109,-55.37109h78.25781l55.37109,55.37109v78.25781l-55.37109,55.37109z"></path></g></g></g></svg>
+                                <!--                                <i class="fa fa-circle" title="--><?php //echo $ip->patientName;?><!--'s Health Status " style="color:red;cursor: pointer"></i>-->
                             <?php }?>
 
-                            <?php if( $inp_health_state['state'] == "Intermediate"){?>
+                            <?php if( $inp_health_state->getHealthStatusId() == "Intermediate"){?>
 
-                                <i class="fa fa-circle fa-2x " title="<?php echo $ip->patientName;?>'s Health Status " style="color:yellow;cursor: pointer"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" title="<?php echo $ip->patientName;?>'s Health Status - <?= $inp_health_state->getHealthStatusId() ;?> "
+                                     width="16" height="16"
+                                     viewBox="0 0 252 252"
+                                     style="fill:#000000;"><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="none" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,252v-252h252v252z" stroke="none" stroke-width="1" stroke-miterlimit="10"></path><g stroke="#f1c40f" stroke-width="21" stroke-miterlimit="4"><g id="surface1"><path d="M86.87109,220.5l-55.37109,-55.37109v-78.25781l55.37109,-55.37109h78.25781l55.37109,55.37109v78.25781l-55.37109,55.37109z"></path></g></g></g></svg>
+                                <!--                                <i class="fa fa-circle" title="--><?php //echo $ip->patientName;?><!--'s Health Status " style="color:yellow;cursor: pointer"></i>-->
                             <?php }?>
 
                             <!--                            <img src="../img/icons/fall-risk.jpg" title="Patient's Risk To Fall - --><?php //echo $inp_health_state['risk_to_fall'];?><!--" width="32px" height="32px" />-->
 
                         <?php }?>
 
-                        <?php if(  ! empty($inp_health_state['risk_to_fall'] ) && $inp_health_state['risk_to_fall'] == 1){?>
-                            <i class="fa fa-exclamation-triangle notif-icons fa-2x" title=" <?php echo $ip->patientName;?>'s Risk To Fall "  style="color:red;cursor"></i>
+                        <?php if(  ! empty($inp_health_state->getRiskToFall() ) && $inp_health_state->getRiskToFall() == 1){?>
+                            <i class="fa fa-exclamation-triangle" title=" <?php echo $ip->patientName;?>'s Risk To Fall - Yes "  style="color:red;cursor"></i>
+
+                        <?php }?>
+
+                        <?php if(  ! empty($inp_health_state->getRiskToFall() ) && $inp_health_state->getRiskToFall() == 0){?>
+                            <i class="fa fa-exclamation-triangle" title=" <?php echo $ip->patientName;?>'s Risk To Fall - No "  style="color:red;cursor"></i>
+
                         <?php }?>
 
 					</td>

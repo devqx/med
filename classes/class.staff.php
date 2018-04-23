@@ -432,7 +432,7 @@ xD9PxeO+pPEfwZX73lUl/D0AAAAASUVORK5CYII=" height="32" width="30" /></td><td><a h
 		error_log( json_encode( $ARR ) );
 		$is_consultant = $ARR['is_consultant'] == 1 ? 1 : 0;
 
-		
+
 		$id = escape($ARR['id']);
 		
 		$query = "UPDATE staff_directory SET firstname = $fname, lastname=$lname, phone=$phonenumber, sip_user_name=$sip_user_name, sip_extension=$sip_extension, sip_password=$sip_password, email=$email, profession=$profession, specialization_id=$specialization, department_id=$department_id, folio_number=$folioNumber , is_consultant=$is_consultant WHERE staffId = $id";

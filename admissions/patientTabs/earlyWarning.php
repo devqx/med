@@ -19,12 +19,18 @@ function get_color_code($score){
 
     $score_average = $score / 7;
 
-    $color_code = [];
+    $color_code = array();
     switch ($score_average){
+
         case ($score_average < 1 && $score_average > 0 ):
             $color_code['bg_color'] = '';
             $color_code['color'] = '';
         break;
+
+        case ($score_average == 1  ):
+            $color_code['bg_color'] = '';
+            $color_code['color'] = '';
+            break;
 
         case ($score_average < 2 && $score_average > 1 ):
             $color_code['bg_color'] = 'yellow';
@@ -32,10 +38,26 @@ function get_color_code($score){
 
             break;
 
-        case ($score_average < 3 && $score_average > 2 ):
+
+
+        case ($score_average == 2 ):
+            $color_code['bg_color'] = 'yellow';
+            $color_code['color'] = '#000';
+
+            break;
+
+        case ($score_average <= 3 && $score_average > 2 ):
             $color_code['bg_color'] = 'red';
             $color_code['color'] = 'white';
             break;
+
+
+
+        case ($score_average == 3  ):
+            $color_code['bg_color'] = 'red';
+            $color_code['color'] = 'white';
+            break;
+
 
     }
 
@@ -65,9 +87,9 @@ New Reading </a>
 
     <tbody>
 
-        <?php foreach ($ew as $key => $value ) {  $c = get_color_code($value['score']); ?>
+        <?php foreach ($ew as $key => $value ) {  $c = get_color_code($value['score']);  ?>
 
-            <tr style="background-color:<?= $c['bg_color']?>;color:<?= $c['color']?>;">
+            <tr style="background: <?= $c['bg_color'];?>;color:<?= $c['color'];?>">
                 <td> <?php  $date = explode(' ', $value['take_time'] ) ;?>
 
                     <span> <?php echo $date[0];?> &nbsp; <?php echo $date[1];?>  </span><br>
